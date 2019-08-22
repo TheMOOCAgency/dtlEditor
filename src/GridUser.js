@@ -38,9 +38,6 @@ class IdPicker extends React.Component {
     )
   }
 }
-
-
-
 class CustomEditor extends React.Component {
   constructor(props) {
     super(props);
@@ -84,20 +81,18 @@ class App extends React.Component {
   }
   getData(result) {
     let columnsArray = result.data[0].map((data,index)=>{
-      if(index === 0){
+      if (index === 0 || index === 5 || index === 6){
         return {
           key: data,
           name: data,
           editable: true,
           sortable: true,
           width: 200,
-          editor: <CustomEditor />
         }
       }else{
         return {
           key: data,
           name: data,
-          editable: true,
           sortable: true,
           width: 200
         }
@@ -162,13 +157,41 @@ class App extends React.Component {
   }
 
   onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
-    this.setState(state => {
-      const rows = state.rows.slice();
-      for (let i = fromRow; i <= toRow; i++) {
-        rows[i] = { ...rows[i], ...updated };
+    if (Object.keys(updated)[0] === "Uid"){
+      for (let i = 1; i < this.props.cultureDigital.data.length; i++) {
+        if (this.props.cultureDigital.data[i][0] === updated.Uid){
+          let newUser = {
+            Uid: this.props.cultureDigital.data[i][0],
+            email: this.props.cultureDigital.data[i][4],
+            first_name: this.props.cultureDigital.data[i][1],
+            last_name: this.props.cultureDigital.data[i][2],
+            role: this.props.cultureDigital.data[i][6],
+            struct_org1: this.props.cultureDigital.data[i][7],
+            struct_org2: this.props.cultureDigital.data[i][8]
+          }
+          
+          this.setState(state => {
+            const rows = state.rows.slice();
+            for (let i = fromRow; i <= toRow; i++) {
+              rows[i] = { ...rows[i], ...newUser };
+            }
+            return { rows };
+          });
+        
+        } else{
+          //console.log('Uid inexistant')
+        }
       }
-      return { rows };
-    });
+    }else{
+      this.setState(state => {
+        const rows = state.rows.slice();
+        for (let i = fromRow; i <= toRow; i++) {
+          rows[i] = { ...rows[i], ...updated };
+        }
+        return { rows };
+      });
+    }
+
   };
 
   sortRows = (initialRows, sortColumn, sortDirection) =>{
