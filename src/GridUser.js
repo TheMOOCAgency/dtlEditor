@@ -80,6 +80,7 @@ class App extends React.Component {
     this.sortRows = this.sortRows.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);    
     this.addRow = this.addRow.bind(this);    
+    this.getCellActions = this.getCellActions.bind(this);
   }
   getData(result) {
     let columnsArray = result.data[0].map((data,index)=>{
@@ -192,12 +193,28 @@ class App extends React.Component {
       rows: [...prevState.rows, {}]
     }))
   }
+  getCellActions(column, row) {
+    const firstNameActions = [
+      {
+        icon: <span className="glyphicon glyphicon-remove" />,
+        callback: () => {
+          this.setState(prevState => ({
+            rows: [...prevState.rows.slice(0, this.state.rows.indexOf(row)), ...prevState.rows.slice(this.state.rows.indexOf(row)+1)]
+          }))
+          alert("Suppression de " + row.Uid);
+        }
+      }
+    ]
+    const cellActions = {
+      Uid: firstNameActions
+    };
+    return cellActions[column.key];
+  }
   render(){
     let gridData;
       if (this.state.isLoading) {
         gridData = <CircularProgress color="primary" />
       }else{
-        console.log(this.state)
           gridData = 
             <div className='gridData'>
             <ReactDataGrid 
@@ -208,6 +225,7 @@ class App extends React.Component {
               enableCellSelect={true}
               minHeight={800}
               headerRowHeight={50}
+              getCellActions={this.getCellActions}
               onGridSort={(sortColumn, sortDirection) => {
                this.setState({
                  rows: this.sortRows(this.state.rows, sortColumn, sortDirection)
@@ -216,13 +234,13 @@ class App extends React.Component {
 
               } />
               <div id='buttonValidate'>
-                <input onClick={this.handleSubmit} type='submit'/>
+                <input onClick={this.handleSubmit} type='submit' value="Valider" />
                 {
                   //<CSVLink data={this.state.rows}>Download me</CSVLink> ************************* Lien pour télecharger directement un fichier CSV
                 }
               </div>
             <div id='addingRowButton'>
-              <input onClick={this.addRow} type='submit' />
+              <input onClick={this.addRow} type='submit' value="Ajouter un utilisateur" />
             </div>
           </div>
 
