@@ -1,3 +1,9 @@
+.circularProgress {
+    position: absolute;
+    top: 45%;
+    left: 45%
+}
+
 .gridData {
-    height: 100vh
-};
+    height: 100%!important;
+}

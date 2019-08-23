@@ -1,69 +1,15 @@
 import React from 'react';
-import ReactDOM from "react-dom";
 import ReactDataGrid from 'react-data-grid';
 import Papa from 'papaparse';
 import './GridUser.css';
-import './plugins/selectMultipleBig/multipleselectbig.js';
-import $ from 'jquery';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Editors } from "react-data-grid-addons";
 
 const { DropDownEditor } = Editors;
 const issueTypes = []; 
-const issueTypes2 = []; 
-/*
-class IdPicker extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { idValue: props.value };
-  }
-  componentDidMount() {
-    $('.idSelect').selectmultiple({
-      text: this.state.idValue,
-      data: issueTypes,
-      width: 200,
-    });
-    var that = this;
-    function handleTemp(s) {//A revoir <---*******
-      that.props.handleChangeComplete(s)//A revoir <---*******
-    }
-
-    $('.idSelect').on('multiple_select_change', function () {
-      handleTemp(this.firstChild.firstChild.innerText) //A revoir <---*******
-    })
-  }
-  render() {
-    return (
-      <div className="idSelect">
-      </div>
-    )
-  }
-}
-class CustomEditor extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { idValue: props.value };
-    this.handleChangeComplete = this.handleChangeComplete.bind(this)
-  }
-  handleChangeComplete = idVa => {
-    this.setState({ idValue: idVa }, () => this.props.onCommit());
-  };
-  getValue() {
-    return {Uid : this.state.idValue}
-  }
-  getInputNode() {
-    return ReactDOM.findDOMNode(this).getElementsByTagName("button")[0].getElementsByTagName("span")[0];
-  }
-
-  render() {
-   return(
-     <IdPicker value={this.props.value} handleChangeComplete={this.handleChangeComplete}/>
-      )
-  }
-}
-*/
-
-
+const struct_org = {};
+const struct_org1 = []; 
+const struct_org2 = [];
 
 class App extends React.Component {
   constructor(props){
@@ -81,27 +27,64 @@ class App extends React.Component {
     this.addRow = this.addRow.bind(this);    
     this.getCellActions = this.getCellActions.bind(this);
   }
+
   getDataStruct (result){
-    result.data.map((x,y)=>{
-      if (issueTypes2.indexOf(x[0]) === -1){
-        issueTypes2.push(x[0])
+    result.data.map((x)=>{
+      if (struct_org1.indexOf(x[0]) === -1){
+        struct_org1.push(x[0])
+      }
+      if (struct_org2.indexOf(x[1]) === -1) {
+        if (x[1] !== '' && x[1] !== undefined){
+          struct_org2.push(x[1])
+        }
       }
     })
-    issueTypes2.shift()
-    console.log(issueTypes2)
-    
+    struct_org1.map((x) => {
+      result.data.map((x2) => {
+        if (x === x2[0] && x2[1]) {
+          if (struct_org[x] === undefined) {
+            struct_org[x] = []
+          }
+          struct_org[x].push(x2[1])
+        }
+        
+      })
+      
+    })
+    struct_org1.shift()
+    struct_org2.shift()
+    struct_org1.sort()
+    struct_org2.sort()
+    struct_org2.push('')
   }
   getData(result) {
-    const IssueTypeEditor = <DropDownEditor options={issueTypes2} />;
+    result.data.pop()
     let columnsArray = result.data[0].map((data,index)=>{
-      if (index === 5 || index === 6) {
+      if (index === 5) {
         return {
           key: data,
           name: data,
           editable: true,
           sortable: true,
-          width: 200,
-          editor: IssueTypeEditor
+          width: 150,
+          editor: <DropDownEditor options={struct_org1} />
+        }
+      } else if (index === 6) {
+        return {
+          key: data,
+          name: data,
+          editable: true,
+          sortable: true,
+          width: 150,
+          editor: <DropDownEditor options={struct_org2} />
+        }
+      } else if (index === 4) {
+        return {
+          key: data,
+          name: data,
+          editable: false,
+          sortable: true,
+          width: 100
         }
       }else if (index === 0){
         return {
@@ -109,7 +92,7 @@ class App extends React.Component {
           name: data,
           editable: true,
           sortable: true,
-          width: 200,
+          width: 150,
         }
       }else{
         return {
@@ -159,7 +142,6 @@ class App extends React.Component {
   }
 
   async getCsvData() {
-    /*With fetch method --************************************************************* > */
     this.fetchCsv('/data/struct_org.csv').then(x=>{
       Papa.parse(x, {
         complete: this.getDataStruct
@@ -171,19 +153,7 @@ class App extends React.Component {
         });
       })
     })
-    
-
-
-
-  /* With Papaparse module method -********************************************************- > 
-
-    Papa.parse('/data/dtl.csv', {
-      download: true,
-      complete: this.getData
-    });*/
-    
   }
-
   handleSubmit (){
     
   }
@@ -201,7 +171,6 @@ class App extends React.Component {
             struct_org1: this.props.cultureDigital.data[i][7],
             struct_org2: this.props.cultureDigital.data[i][8]
           }
-          
           this.setState(state => {
             const rows = state.rows.slice();
             for (let i = fromRow; i <= toRow; i++) {
@@ -210,9 +179,33 @@ class App extends React.Component {
             return { rows };
           });
         
-        } else{
-          //console.log('Uid inexistant')
         }
+      }
+    } else if (Object.keys(updated)[0] === "struct_org2"){
+      if (struct_org[this.state.rows[fromRow].struct_org1].indexOf(updated.struct_org2) !== -1 || updated.struct_org2 === ''){
+        this.setState(state => {
+          const rows = state.rows.slice();
+          for (let i = fromRow; i <= toRow; i++) {
+            rows[i] = { ...rows[i], ...updated };
+          }
+          return { rows };
+        });
+      }else{
+        alert('Combinaison erronée')
+      }
+
+    } else if (Object.keys(updated)[0] === "struct_org1") {
+
+      if (struct_org[updated.struct_org1].indexOf(this.state.rows[fromRow].struct_org2) !== -1 || updated.struct_org1 === '') {
+        this.setState(state => {
+          const rows = state.rows.slice();
+          for (let i = fromRow; i <= toRow; i++) {
+            rows[i] = { ...rows[i], ...updated };
+          }
+          return { rows };
+        });
+      }else{
+        alert('Combinaison erronée')
       }
     }else{
       this.setState(state => {
@@ -265,10 +258,11 @@ class App extends React.Component {
     };
     return cellActions[column.key];
   }
+  
   render(){
     let gridData;
       if (this.state.isLoading) {
-        gridData = <CircularProgress color="primary" />
+        gridData = <div className='circularProgress'><CircularProgress color="primary" /></div>
       }else{
           gridData = 
             <div className='gridData'>
@@ -290,9 +284,6 @@ class App extends React.Component {
               } />
               <div id='buttonValidate'>
                 <input onClick={this.handleSubmit} type='submit' value="Valider" />
-                {
-                  //<CSVLink data={this.state.rows}>Download me</CSVLink> ************************* Lien pour télecharger directement un fichier CSV
-                }
               </div>
             <div id='addingRowButton'>
               <input onClick={this.addRow} type='submit' value="Ajouter un utilisateur" />
