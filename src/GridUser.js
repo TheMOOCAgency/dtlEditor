@@ -6,11 +6,12 @@ import './GridUser.css';
 import './plugins/selectMultipleBig/multipleselectbig.js';
 import $ from 'jquery';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { Editors } from "react-data-grid-addons";
 
-
-
-const issueTypes = []; //temporaire********************
-
+const { DropDownEditor } = Editors;
+const issueTypes = []; 
+const issueTypes2 = []; 
+/*
 class IdPicker extends React.Component {
   constructor(props) {
     super(props);
@@ -60,7 +61,7 @@ class CustomEditor extends React.Component {
       )
   }
 }
-
+*/
 
 
 
@@ -73,15 +74,36 @@ class App extends React.Component {
       isLoading : true,
     }
     this.getData = this.getData.bind(this);
+    this.getDataStruct = this.getDataStruct.bind(this);
     this.onGridRowsUpdated = this.onGridRowsUpdated.bind(this);
     this.sortRows = this.sortRows.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);    
     this.addRow = this.addRow.bind(this);    
     this.getCellActions = this.getCellActions.bind(this);
   }
+  getDataStruct (result){
+    result.data.map((x,y)=>{
+      if (issueTypes2.indexOf(x[0]) === -1){
+        issueTypes2.push(x[0])
+      }
+    })
+    issueTypes2.shift()
+    console.log(issueTypes2)
+    
+  }
   getData(result) {
+    const IssueTypeEditor = <DropDownEditor options={issueTypes2} />;
     let columnsArray = result.data[0].map((data,index)=>{
-      if (index === 0 || index === 5 || index === 6){
+      if (index === 5 || index === 6) {
+        return {
+          key: data,
+          name: data,
+          editable: true,
+          sortable: true,
+          width: 200,
+          editor: IssueTypeEditor
+        }
+      }else if (index === 0){
         return {
           key: data,
           name: data,
@@ -123,9 +145,9 @@ class App extends React.Component {
     
   }
 
-  async fetchCsv() {
+  async fetchCsv(file) {
 
-    return await fetch('/data/dtl.csv')
+    return await fetch(file)
     .then((response)=> {
       this.props.cultureDigital.data.map((data, index) => {
         if (index >= 1) {
@@ -138,10 +160,20 @@ class App extends React.Component {
 
   async getCsvData() {
     /*With fetch method --************************************************************* > */
-    let csvData = await this.fetchCsv();
-    Papa.parse(csvData, {
-      complete: this.getData
-    });
+    this.fetchCsv('/data/struct_org.csv').then(x=>{
+      Papa.parse(x, {
+        complete: this.getDataStruct
+      });
+    }).then(x=>{
+    this.fetchCsv('/data/dtl.csv').then(y=>{
+        Papa.parse(y, {
+          complete: this.getData
+        });
+      })
+    })
+    
+
+
 
   /* With Papaparse module method -********************************************************- > 
 
@@ -207,7 +239,7 @@ class App extends React.Component {
 
   componentDidMount(){
     this.setState({ isLoading: true });
-    this.getCsvData();
+    this.getCsvData('/data/dtl.csv');
   }
   addRow(){
     let canvGrid = document.getElementsByClassName("react-grid-Canvas")[0];
