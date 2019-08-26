@@ -6,6 +6,8 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { Editors } from "react-data-grid-addons";
 import Button from '@material-ui/core/Button';
 const { DropDownEditor } = Editors;
+
+
 const issueTypes = []; 
 const struct_org = {};
 const struct_org1 = []; 
@@ -66,7 +68,8 @@ class App extends React.Component {
           name: data,
           editable: true,
           sortable: true,
-          width: 150,
+          resizable : true,
+          width: 125,
           editor: <DropDownEditor options={struct_org1} />
         }
       } else if (index === 6) {
@@ -75,7 +78,8 @@ class App extends React.Component {
           name: data,
           editable: true,
           sortable: true,
-          width: 150,
+          resizable: true,
+          width: 125,
           editor: <DropDownEditor options={struct_org2} />
         }
       } else if (index === 4) {
@@ -84,6 +88,7 @@ class App extends React.Component {
           name: data,
           editable: false,
           sortable: true,
+          resizable: true,
           width: 100
         }
       }else if (index === 0){
@@ -92,6 +97,7 @@ class App extends React.Component {
           name: data,
           editable: true,
           sortable: true,
+          resizable: true,
           width: 150,
         }
       }else{
@@ -99,6 +105,7 @@ class App extends React.Component {
           key: data,
           name: data,
           sortable: true,
+          resizable: true,
           width: 200
         }
       }
@@ -271,7 +278,7 @@ class App extends React.Component {
               rowsCount={this.state.rows.length}
               onGridRowsUpdated={this.onGridRowsUpdated}
               enableCellSelect={true}
-              minHeight={800}
+              minHeight={520}
               headerRowHeight={50}
               getCellActions={this.getCellActions}
               onGridSort={(sortColumn, sortDirection) => {
@@ -297,6 +304,4 @@ class App extends React.Component {
       );
    }
   }
-
-
 export default App;
