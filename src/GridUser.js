@@ -4,7 +4,7 @@ import Papa from 'papaparse';
 import './GridUser.css';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Editors } from "react-data-grid-addons";
-
+import Button from '@material-ui/core/Button';
 const { DropDownEditor } = Editors;
 const issueTypes = []; 
 const struct_org = {};
@@ -249,7 +249,6 @@ class App extends React.Component {
           this.setState(prevState => ({
             rows: [...prevState.rows.slice(0, this.state.rows.indexOf(row)), ...prevState.rows.slice(this.state.rows.indexOf(row)+1)]
           }))
-          alert("Suppression de " + row.Uid);
         }
       }
     ]
@@ -282,12 +281,12 @@ class App extends React.Component {
               }
 
               } />
-              <div id='buttonValidate'>
+            <Button color="primary" variant="contained" id='buttonValidate'>
                 <input onClick={this.handleSubmit} type='submit' value="Valider" />
-              </div>
-            <div id='addingRowButton'>
+            </Button>
+            <Button color="primary" variant="contained" id='addingRowButton'>
               <input onClick={this.addRow} type='submit' value="Ajouter un utilisateur" />
-            </div>
+            </Button>
           </div>
 
       }
