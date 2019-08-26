@@ -7,7 +7,9 @@ import GridUser from './GridUser';
 import * as serviceWorker from './serviceWorker';
 import Papa from 'papaparse';
 
-let truc;
+
+
+let truc; // --------------Window props
 let temporaryFetching = async function() {
 
     return await fetch('/data/culture_digital_export_masquee.csv')
@@ -24,6 +26,10 @@ let getCsvData = async function () {
         }
     });
 }
+
+
+
+
 getCsvData().then(()=>{
     ReactDOM.render(
         <div id='wrapper'>

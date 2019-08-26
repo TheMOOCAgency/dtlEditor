@@ -7,13 +7,11 @@ import { Editors } from "react-data-grid-addons";
 import Button from '@material-ui/core/Button';
 const { DropDownEditor } = Editors;
 
+const struct_org = {}; // -- Objet relatoinnel des struct 1 et 2 de culture digital  
+const struct_org1 = [];  // Liste struct_org1 de culture digital  
+const struct_org2 = []; // Liste struct_org2 de culture digital  
 
-const issueTypes = []; 
-const struct_org = {};
-const struct_org1 = []; 
-const struct_org2 = [];
-
-class App extends React.Component {
+class App extends React.Component { // App principal
   constructor(props){
     super(props);
     this.state={
@@ -30,7 +28,7 @@ class App extends React.Component {
     this.getCellActions = this.getCellActions.bind(this);
   }
 
-  getDataStruct (result){
+  getDataStruct (result){ // Recupère les données des struc_org
     result.data.map((x)=>{
       if (struct_org1.indexOf(x[0]) === -1){
         struct_org1.push(x[0])
@@ -59,9 +57,13 @@ class App extends React.Component {
     struct_org2.sort()
     struct_org2.push('')
   }
-  getData(result) {
-    result.data.pop()
-    let columnsArray = result.data[0].map((data,index)=>{
+
+
+  getData(result) { // Récupère les données des fetch
+
+    result.data.pop() 
+
+    let columnsArray = result.data[0].map((data,index)=>{ //Formatage en objet pour react data grid
       if (index === 5) {
         return {
           key: data,
@@ -111,6 +113,7 @@ class App extends React.Component {
       }
       
     })
+
     let formateDataForGrid = async (datas) => {
       
       return new Promise((resolve, reject) => {
@@ -135,20 +138,17 @@ class App extends React.Component {
     
   }
 
-  async fetchCsv(file) {
+  async fetchCsv(file) { // fetch 
 
     return await fetch(file)
     .then((response)=> {
       this.props.cultureDigital.data.map((data, index) => {
-        if (index >= 1) {
-          issueTypes.push(data[0])
-        }
       })
       return response.text()
     })
   }
 
-  async getCsvData() {
+  async getCsvData() { //parse
     this.fetchCsv('/data/struct_org.csv').then(x=>{
       Papa.parse(x, {
         complete: this.getDataStruct
@@ -161,16 +161,16 @@ class App extends React.Component {
       })
     })
   }
-  handleSubmit (){
+  handleSubmit (){ // Validation de données
     
   }
 
-  onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
+  onGridRowsUpdated = ({ fromRow, toRow, updated }) => {   // Fonction de mise à jour des données 
     if (Object.keys(updated)[0] === "Uid"){
       for (let i = 1; i < this.props.cultureDigital.data.length; i++) {
         if (this.props.cultureDigital.data[i][0] === updated.Uid){
           let newUser = {
-            Uid: this.props.cultureDigital.data[i][0],
+            Uid: this.props.cultureDigital.data[i][0],  // A revoir -----------------------------------
             email: this.props.cultureDigital.data[i][4],
             first_name: this.props.cultureDigital.data[i][1],
             last_name: this.props.cultureDigital.data[i][2],
@@ -226,7 +226,7 @@ class App extends React.Component {
 
   };
 
-  sortRows = (initialRows, sortColumn, sortDirection) =>{
+  sortRows = (initialRows, sortColumn, sortDirection) =>{  // --------------------  Fonction de tri des colonnes 
     const comparer = (a, b) => {
       if (sortDirection === "ASC") {
         return a[sortColumn] > b[sortColumn] ? 1 : -1;
@@ -237,18 +237,15 @@ class App extends React.Component {
     return sortDirection === "NONE" ? initialRows : [...initialRows].sort(comparer);
   };
 
-  componentDidMount(){
-    this.setState({ isLoading: true });
-    this.getCsvData('/data/dtl.csv');
-  }
-  addRow(){
+
+  addRow(){ // ------------------------------------------------------------------- Ajout de cellule 
     let canvGrid = document.getElementsByClassName("react-grid-Canvas")[0];
     canvGrid.scrollTop = canvGrid.scrollHeight;
     this.setState(prevState => ({
       rows: [...prevState.rows, {}]
     }))
   }
-  getCellActions(column, row) {
+  getCellActions(column, row) { // ----------------------------------------------- Gestion de suppression des cellules 
     const firstNameActions = [
       {
         icon: <span className="glyphicon glyphicon-remove" />,
@@ -264,7 +261,10 @@ class App extends React.Component {
     };
     return cellActions[column.key];
   }
-  
+  componentDidMount() {
+    this.setState({ isLoading: true });
+    this.getCsvData('/data/dtl.csv');
+  }
   render(){
     let gridData;
       if (this.state.isLoading) {
