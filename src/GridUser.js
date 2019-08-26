@@ -43,7 +43,7 @@ class App extends React.Component {
     })
     struct_org1.map((x) => {
       result.data.map((x2) => {
-        if (x === x2[0] && x2[1]) {
+        if (x === x2[0]) {
           if (struct_org[x] === undefined) {
             struct_org[x] = []
           }
@@ -51,8 +51,11 @@ class App extends React.Component {
         }
         
       })
-      
     })
+    for (var property in struct_org) {
+      struct_org[property].push('');
+    }
+    struct_org[''] = [...struct_org2]
     struct_org1.shift()
     struct_org2.shift()
     struct_org1.sort()
@@ -202,7 +205,6 @@ class App extends React.Component {
       }
 
     } else if (Object.keys(updated)[0] === "struct_org1") {
-
       if (struct_org[updated.struct_org1].indexOf(this.state.rows[fromRow].struct_org2) !== -1 || updated.struct_org1 === '') {
         this.setState(state => {
           const rows = state.rows.slice();
