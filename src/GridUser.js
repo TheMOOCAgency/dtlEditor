@@ -138,16 +138,16 @@ class App extends React.Component {
   }
   onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
     if (Object.keys(updated)[0] === "Uid"){
-      for (let i = 1; i < this.props.cultureDigital.data.length; i++) {
-        if (this.props.cultureDigital.data[i][0] === updated.Uid){
+      for (let i = 1; i < this.props.cultureDigital.length; i++) {
+        if (this.props.cultureDigital[i].Uid === updated.Uid){
           let newUser = {
-            Uid: this.props.cultureDigital.data[i][0],
-            email: this.props.cultureDigital.data[i][4],
-            first_name: this.props.cultureDigital.data[i][1],
-            last_name: this.props.cultureDigital.data[i][2],
-            role: this.props.cultureDigital.data[i][6],
-            struct_org1: this.props.cultureDigital.data[i][7],
-            struct_org2: this.props.cultureDigital.data[i][8]
+            Uid: this.props.cultureDigital[i].Uid,
+            email: this.props.cultureDigital[i].email,
+            first_name: this.props.cultureDigital[i].first_name,
+            last_name: this.props.cultureDigital[i].last_name,
+            role: this.props.cultureDigital[i].role,
+            struct_org1: this.props.cultureDigital[i].struct_org1,
+            struct_org2: this.props.cultureDigital[i].struct_org2
           }
           this.setState(state => {
             const rows = state.rows.slice();
@@ -156,7 +156,6 @@ class App extends React.Component {
             }
             return { rows };
           });
-        
         }
       }
     } else if (Object.keys(updated)[0] === "struct_org2"){
@@ -233,21 +232,17 @@ class App extends React.Component {
     return cellActions[column.key];
   }
   handleSubmit() {
-    fetch('http://localhost:3000/', {
+    let formData = new FormData();
+    formData.append('data', JSON.stringify(this.state.rows))
+    fetch(window.location.href, {
       method: 'POST',
       headers: {
-        'auth': '1234'
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'X-CSRFToken': window.props.csrfToken
       },
-      body: JSON.stringify({
-        rows: this.state.rows
-      })
+      body: formData,
     })
-      .then(function (data) {
-        console.log('Request success: ', data);
-      })
-      .catch(function (error) {
-        console.log('Request failure: ', error);
-      });
   }
   componentDidMount() {
     this.setState({ isLoading: true });
