@@ -1,14 +1,12 @@
 import React from 'react';
 import ReactDataGrid from 'react-data-grid';
-import Papa from 'papaparse';
 import './GridUser.css';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Editors } from "react-data-grid-addons";
 import Button from '@material-ui/core/Button';
+import FormDialog from './components/FormDialog'
 const { DropDownEditor } = Editors;
 
-
-const issueTypes = []; 
 const struct_org = {};
 const struct_org1 = []; 
 const struct_org2 = [];
@@ -20,6 +18,8 @@ class App extends React.Component {
       columns : null,
       rows : null, 
       isLoading : true,
+      openedDialogDelete: false,
+      deletingRow:{},
     }
     this.getData = this.getData.bind(this);
     this.getDataStruct = this.getDataStruct.bind(this);
@@ -28,9 +28,21 @@ class App extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);    
     this.addRow = this.addRow.bind(this);    
     this.getCellActions = this.getCellActions.bind(this);
+    this.deleteRow = this.deleteRow.bind(this);
+  }
+  closeDialog = () => {
+    this.setState({
+      openedDialogDelete: false,
+    })
+  }
+  openDialog=(row)=>{
+    this.setState({
+      openedDialogDelete:true,
+      deletingRow : row
+    })
   }
   getData() {
-    let columnsArray = Object.keys(this.props.dtl[0]).map((data,index)=>{
+    let columnsArray = Object.keys(this.props.dtl[0]).map((data)=>{
       if (data === 'struct_org1') {
         return {
           key: data,
@@ -201,17 +213,17 @@ class App extends React.Component {
     };
     return sortDirection === "NONE" ? initialRows : [...initialRows].sort(comparer);
   };
-
-
-
+  deleteRow (row){
+    this.setState(prevState => ({
+      rows: [...prevState.rows.slice(0, this.state.rows.indexOf(row)), ...prevState.rows.slice(this.state.rows.indexOf(row) + 1)]
+    }))
+  }
   getCellActions(column, row) {
     const firstNameActions = [
       {
         icon: <span className="glyphicon glyphicon-remove" />,
-        callback: () => {
-          this.setState(prevState => ({
-            rows: [...prevState.rows.slice(0, this.state.rows.indexOf(row)), ...prevState.rows.slice(this.state.rows.indexOf(row)+1)]
-          }))
+        callback: ()=>{
+          this.openDialog(row)
         }
       }
     ]
@@ -227,7 +239,6 @@ class App extends React.Component {
         'auth': '1234'
       },
       body: JSON.stringify({
-        columns: this.state.columns,
         rows: this.state.rows
       })
     })
@@ -272,6 +283,13 @@ class App extends React.Component {
             <Button color="primary" variant="contained" id='addingRowButton'>
               <input onClick={this.addRow} type='submit' value="Ajouter un utilisateur" />
             </Button>
+            <FormDialog
+              open={this.state.openedDialogDelete}
+              handleClose={this.closeDialog}
+              handleClickOpen={this.openDialog}
+              handleDeleteRow={this.deleteRow}
+              deletingRow={this.state.deletingRow}
+            />
           </div>
 
       }
