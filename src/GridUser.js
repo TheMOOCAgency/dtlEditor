@@ -29,43 +29,9 @@ class App extends React.Component {
     this.addRow = this.addRow.bind(this);    
     this.getCellActions = this.getCellActions.bind(this);
   }
-
-  getDataStruct (result){
-    result.data.map((x)=>{
-      if (struct_org1.indexOf(x[0]) === -1){
-        struct_org1.push(x[0])
-      }
-      if (struct_org2.indexOf(x[1]) === -1) {
-        if (x[1] !== '' && x[1] !== undefined){
-          struct_org2.push(x[1])
-        }
-      }
-    })
-    struct_org1.map((x) => {
-      result.data.map((x2) => {
-        if (x === x2[0]) {
-          if (struct_org[x] === undefined) {
-            struct_org[x] = []
-          }
-          struct_org[x].push(x2[1])
-        }
-        
-      })
-    })
-    for (var property in struct_org) {
-      struct_org[property].push('');
-    }
-    struct_org[''] = [...struct_org2]
-    struct_org1.shift()
-    struct_org2.shift()
-    struct_org1.sort()
-    struct_org2.sort()
-    struct_org2.push('')
-  }
-  getData(result) {
-    result.data.pop()
-    let columnsArray = result.data[0].map((data,index)=>{
-      if (index === 5) {
+  getData() {
+    let columnsArray = Object.keys(this.props.dtl[0]).map((data,index)=>{
+      if (data === 'struct_org1') {
         return {
           key: data,
           name: data,
@@ -75,7 +41,7 @@ class App extends React.Component {
           width: 125,
           editor: <DropDownEditor options={struct_org1} />
         }
-      } else if (index === 6) {
+      } else if (data === 'struct_org2') {
         return {
           key: data,
           name: data,
@@ -85,7 +51,7 @@ class App extends React.Component {
           width: 125,
           editor: <DropDownEditor options={struct_org2} />
         }
-      } else if (index === 4) {
+      } else if (data === 'role') {
         return {
           key: data,
           name: data,
@@ -94,7 +60,7 @@ class App extends React.Component {
           resizable: true,
           width: 100
         }
-      }else if (index === 0){
+      }else if (data === 'Uid'){
         return {
           key: data,
           name: data,
@@ -114,75 +80,50 @@ class App extends React.Component {
       }
       
     })
-    let formateDataForGrid = async (datas) => {
-      
-      return new Promise((resolve, reject) => {
-        let row = [];
-        for (let i = 1; i < datas.length; i++) {
-          let tempRow = datas[i].map((data, index) => {
-            if (columnsArray[index] !== undefined){
-              return {
-                [columnsArray[index].key]: data
-              }
-            }
-            return null
-          })
-          row.push(Object.assign({}, ...tempRow))
+    this.setState({
+      columns: columnsArray,
+      rows : this.props.dtl,
+      struct_org: this.getDataStruct(this.props.struct_org),
+      isLoading: false 
+    })
+  }
+  getDataStruct(result) {
+    Object.keys(result).map((x) => {
+      if (struct_org1.indexOf(result[x].struct_org1) === -1) {
+        if (result[x].struct_org1 !== undefined) {
+          struct_org1.push(result[x].struct_org1)
         }
-        resolve(row)
+
+      }
+      if (struct_org2.indexOf(result[x].struct_org1) === -1) {
+        if (result[x].struct_org2 !== '' && result[x].struct_org2 !== undefined) {
+          struct_org2.push(result[x].struct_org2)
+        }
+      }
+    })
+
+    struct_org1.map((x) => {
+      Object.keys(result).map((x2) => {
+        if (x === result[x2].struct_org1) {
+          if (struct_org[x] === undefined) {
+            struct_org[x] = []
+          }
+          if (result[x2].struct_org2 != '' || result[x2].struct_org2 !== undefined) {
+            struct_org[x].push(result[x2].struct_org2)
+          }
+        }
       })
+    })
+    for (var property in struct_org) {
+      struct_org[property].push('');
     }
-    formateDataForGrid(result.data).then(resultRow=>{
-      this.setState({ columns: columnsArray, rows: resultRow, isLoading:false });
-    })
-    
-  }
 
-  async fetchCsv(file) {
+    struct_org[''] = [...struct_org2]
+    struct_org1.sort()
+    struct_org2.sort()
+    struct_org2.push('')
 
-    return await fetch(file)
-    .then((response)=> {
-      this.props.cultureDigital.data.map((data, index) => {
-        if (index >= 1) {
-          issueTypes.push(data[0])
-        }
-      })
-      return response.text()
-    })
   }
-
-  async getCsvData() {
-    this.fetchCsv('/data/struct_org.csv').then(x=>{
-      Papa.parse(x, {
-        complete: this.getDataStruct
-      });
-    }).then(x=>{
-    this.fetchCsv('/data/dtl.csv').then(y=>{
-        Papa.parse(y, {
-          complete: this.getData
-        });
-      })
-    })
-  }
-  handleSubmit (){
-    fetch('http://localhost:3000/', {
-      method: 'POST',
-      headers: {
-        'auth': '1234'
-      },
-      body: JSON.stringify({
-        columns : this.state.columns,
-        rows : this.state.rows
-      })
-    })
-      .then(function (data) {
-        console.log('Request success: ', data);
-      })
-      .catch(function (error) {
-        console.log('Request failure: ', error);
-      });
-  }
-
   onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
     if (Object.keys(updated)[0] === "Uid"){
       for (let i = 1; i < this.props.cultureDigital.data.length; i++) {
@@ -242,6 +183,13 @@ class App extends React.Component {
     }
 
   };
+  addRow(){
+    let canvGrid = document.getElementsByClassName("react-grid-Canvas")[0];
+    canvGrid.scrollTop = canvGrid.scrollHeight;
+    this.setState(prevState => ({
+      rows: [...prevState.rows, {}]
+    }))
+  }
 
   sortRows = (initialRows, sortColumn, sortDirection) =>{
     const comparer = (a, b) => {
@@ -254,17 +202,8 @@ class App extends React.Component {
     return sortDirection === "NONE" ? initialRows : [...initialRows].sort(comparer);
   };
 
-  componentDidMount(){
-    this.setState({ isLoading: true });
-    this.getCsvData('/data/dtl.csv');
-  }
-  addRow(){
-    let canvGrid = document.getElementsByClassName("react-grid-Canvas")[0];
-    canvGrid.scrollTop = canvGrid.scrollHeight;
-    this.setState(prevState => ({
-      rows: [...prevState.rows, {}]
-    }))
-  }
+
+
   getCellActions(column, row) {
     const firstNameActions = [
       {
@@ -281,7 +220,29 @@ class App extends React.Component {
     };
     return cellActions[column.key];
   }
-  
+  handleSubmit() {
+    fetch('http://localhost:3000/', {
+      method: 'POST',
+      headers: {
+        'auth': '1234'
+      },
+      body: JSON.stringify({
+        columns: this.state.columns,
+        rows: this.state.rows
+      })
+    })
+      .then(function (data) {
+        console.log('Request success: ', data);
+      })
+      .catch(function (error) {
+        console.log('Request failure: ', error);
+      });
+  }
+  componentDidMount() {
+    this.setState({ isLoading: true });
+    this.getData(this.props.dtl)
+
+  }
   render(){
     let gridData;
       if (this.state.isLoading) {
