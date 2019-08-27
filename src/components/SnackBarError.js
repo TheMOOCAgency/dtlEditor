@@ -14,6 +14,15 @@ export default function SnackBarError(props) {
                     horizontal: 'left',
                 }}
                 open={props.open}
+                onClose={(event,reason) => {
+                        if (reason === 'clickaway') {
+                            return ;
+                        }
+                        else{
+                            return props.handleClose()
+                        }
+                    }
+                }
                 autoHideDuration={6000}
                 ContentProps={{
                     'aria-describedby': 'message-id',

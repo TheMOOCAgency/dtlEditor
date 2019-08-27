@@ -21,7 +21,8 @@ class App extends React.Component {
       isLoading : true,
       openedDialogDelete: false,
       deletingRow:{},
-      openedWarning : false
+      openedWarning : false,
+      changing : false
     }
     this.getData = this.getData.bind(this);
     this.getDataStruct = this.getDataStruct.bind(this);
@@ -31,30 +32,27 @@ class App extends React.Component {
     this.addRow = this.addRow.bind(this);    
     this.getCellActions = this.getCellActions.bind(this);
     this.deleteRow = this.deleteRow.bind(this);
-    this.openWarning = this.openWarning.bind(this);
   }
+
   closeWarning = () => {
     this.setState({
       openedWarning: false,
     })
   }
-  openWarning = () => {
-    console.log('la')
-    this.setState({
-      openedWarning: true,
-    })
-  }
+
   closeDialog = () => {
     this.setState({
       openedDialogDelete: false,
     })
   }
+
   openDialog=(row)=>{
     this.setState({
       openedDialogDelete:true,
       deletingRow : row
     })
   }
+
   getData() {
     let columnsSorted = [
       Object.keys(this.props.dtl[0])[2], Object.keys(this.props.dtl[0])[1], Object.keys(this.props.dtl[0])[0], Object.keys(this.props.dtl[0])[6], Object.keys(this.props.dtl[0])[4], Object.keys(this.props.dtl[0])[3]
@@ -101,7 +99,6 @@ class App extends React.Component {
       
     })
 
-
     this.setState({
       columns: columnsArray,
       rows : this.props.dtl,
@@ -109,6 +106,7 @@ class App extends React.Component {
       isLoading: false 
     })
   }
+
   getDataStruct(result) {
     Object.keys(result).map((x) => {
       if (struct_org1.indexOf(result[x].struct_org1) === -1) {
@@ -146,11 +144,10 @@ class App extends React.Component {
     struct_org2.push('')
     struct_org1.sort()
     struct_org2.sort()
-    
-
-
   }
+
   onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
+    
     if (Object.keys(updated)[0] === "Uid"){
       this.closeWarning();
       let count = false;
@@ -192,7 +189,9 @@ class App extends React.Component {
         return { rows };
       });
     }
-
+    this.setState({
+      changing : true
+    })
   };
   addRow(){
     let canvGrid = document.getElementsByClassName("react-grid-Canvas")[0];
@@ -214,11 +213,13 @@ class App extends React.Component {
     };
     return sortDirection === "NONE" ? initialRows : [...initialRows].sort(comparer);
   };
+
   deleteRow (row){
     this.setState(prevState => ({
       rows: [...prevState.rows.slice(0, this.state.rows.indexOf(row)), ...prevState.rows.slice(this.state.rows.indexOf(row) + 1)]
     }))
   }
+
   getCellActions(column, row) {
     const firstNameActions = [
       {
@@ -233,6 +234,7 @@ class App extends React.Component {
     };
     return cellActions[column.key];
   }
+
   handleSubmit() {
     let formData = new FormData();
     formData.append('data', JSON.stringify(this.state.rows))
@@ -246,11 +248,12 @@ class App extends React.Component {
       body: formData,
     })
   }
+
   componentWillMount() {
     this.setState({ isLoading: true });
     this.getData(this.props.dtl)
-  
   }
+
   componentDidMount(){
     const comparer = (a, b) => {
       return a['last_name'] > b['last_name'] ? 1 : -1;
@@ -259,6 +262,7 @@ class App extends React.Component {
       rows:[...this.state.rows].sort(comparer)
     })
   }
+
   render(){
     let gridData;
       if (this.state.isLoading) {
@@ -273,6 +277,9 @@ class App extends React.Component {
             <Button onClick={this.addRow} color="primary" variant="contained" id='addingRowButton'>
               Ajouter un utilisateur
             </Button>
+              {this.state.changing && 
+                <p className={'changeWarning'}>Vous avez éventuellement des changements en attente</p>
+              }
             <ReactDataGrid 
               ref={(datagrid) => { this.refGrid = datagrid; }}
               columns={this.state.columns}
