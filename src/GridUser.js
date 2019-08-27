@@ -221,22 +221,17 @@ class App extends React.Component {
     return cellActions[column.key];
   }
   handleSubmit() {
-    fetch('http://localhost:3000/', {
+    let formData = new FormData();
+    formData.append('data', JSON.stringify(this.state.rows))
+    fetch(window.location.href, {
       method: 'POST',
-      headers: {
-        'auth': '1234'
+      headers:{
+        Accept:'application/json',
+        'Content-Type':'application/json',
+        'X-CSRFToken':window.props.csrfToken
       },
-      body: JSON.stringify({
-        columns: this.state.columns,
-        rows: this.state.rows
-      })
+      body: formData,
     })
-      .then(function (data) {
-        console.log('Request success: ', data);
-      })
-      .catch(function (error) {
-        console.log('Request failure: ', error);
-      });
   }
   componentDidMount() {
     this.setState({ isLoading: true });
