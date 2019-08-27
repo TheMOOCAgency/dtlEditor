@@ -165,7 +165,22 @@ class App extends React.Component {
     })
   }
   handleSubmit (){
-    
+    fetch('http://localhost:3000/', {
+      method: 'POST',
+      headers: {
+        'auth': '1234'
+      },
+      body: JSON.stringify({
+        columns : this.state.columns,
+        rows : this.state.rows
+      })
+    })
+      .then(function (data) {
+        console.log('Request success: ', data);
+      })
+      .catch(function (error) {
+        console.log('Request failure: ', error);
+      });
   }
 
   onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
