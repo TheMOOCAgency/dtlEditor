@@ -7,3 +7,7 @@
 .gridData {
     height: 100%!important;
 }
+
+.warningSnack{
+    font-size: 18px;
+}

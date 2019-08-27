@@ -5,6 +5,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { Editors } from "react-data-grid-addons";
 import Button from '@material-ui/core/Button';
 import FormDialog from './components/FormDialog'
+import SnackBarError from './components/SnackBarError'
 const { DropDownEditor } = Editors;
 
 const struct_org = {};
@@ -20,6 +21,7 @@ class App extends React.Component {
       isLoading : true,
       openedDialogDelete: false,
       deletingRow:{},
+      openedWarning : false
     }
     this.getData = this.getData.bind(this);
     this.getDataStruct = this.getDataStruct.bind(this);
@@ -29,6 +31,18 @@ class App extends React.Component {
     this.addRow = this.addRow.bind(this);    
     this.getCellActions = this.getCellActions.bind(this);
     this.deleteRow = this.deleteRow.bind(this);
+    this.openWarning = this.openWarning.bind(this);
+  }
+  closeWarning = () => {
+    this.setState({
+      openedWarning: false,
+    })
+  }
+  openWarning = () => {
+    console.log('la')
+    this.setState({
+      openedWarning: true,
+    })
   }
   closeDialog = () => {
     this.setState({
@@ -42,7 +56,10 @@ class App extends React.Component {
     })
   }
   getData() {
-    let columnsArray = Object.keys(this.props.dtl[0]).map((data)=>{
+    let columnsSorted = [
+      Object.keys(this.props.dtl[0])[2], Object.keys(this.props.dtl[0])[1], Object.keys(this.props.dtl[0])[0], Object.keys(this.props.dtl[0])[6], Object.keys(this.props.dtl[0])[4], Object.keys(this.props.dtl[0])[3]
+    ]
+    let columnsArray = columnsSorted.map((data)=>{
       if (data === 'struct_org1') {
         return {
           key: data,
@@ -62,15 +79,6 @@ class App extends React.Component {
           resizable: true,
           width: 125,
           editor: <DropDownEditor options={struct_org2} />
-        }
-      } else if (data === 'role') {
-        return {
-          key: data,
-          name: data,
-          editable: false,
-          sortable: true,
-          resizable: true,
-          width: 100
         }
       }else if (data === 'Uid'){
         return {
@@ -92,6 +100,8 @@ class App extends React.Component {
       }
       
     })
+
+
     this.setState({
       columns: columnsArray,
       rows : this.props.dtl,
@@ -131,23 +141,30 @@ class App extends React.Component {
     }
 
     struct_org[''] = [...struct_org2]
+    struct_org['-ALL'] = [...struct_org2]
+    struct_org1.push('-ALL')
+    struct_org2.push('')
     struct_org1.sort()
     struct_org2.sort()
-    struct_org2.push('')
+    
+
 
   }
   onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
     if (Object.keys(updated)[0] === "Uid"){
+      this.closeWarning();
+      let count = false;
       for (let i = 1; i < this.props.cultureDigital.length; i++) {
         if (this.props.cultureDigital[i].Uid === updated.Uid){
+          count = true;
           let newUser = {
             Uid: this.props.cultureDigital[i].Uid,
             email: this.props.cultureDigital[i].email,
             first_name: this.props.cultureDigital[i].first_name,
             last_name: this.props.cultureDigital[i].last_name,
             role: this.props.cultureDigital[i].role,
-            struct_org1: this.props.cultureDigital[i].struct_org1,
-            struct_org2: this.props.cultureDigital[i].struct_org2
+            struct_org1: "",
+            struct_org2: ""
           }
           this.setState(state => {
             const rows = state.rows.slice();
@@ -157,31 +174,14 @@ class App extends React.Component {
             return { rows };
           });
         }
+      
       }
-    } else if (Object.keys(updated)[0] === "struct_org2"){
-      if (struct_org[this.state.rows[fromRow].struct_org1].indexOf(updated.struct_org2) !== -1 || updated.struct_org2 === ''){
-        this.setState(state => {
-          const rows = state.rows.slice();
-          for (let i = fromRow; i <= toRow; i++) {
-            rows[i] = { ...rows[i], ...updated };
-          }
-          return { rows };
-        });
-      }else{
-        alert('Combinaison erronée')
-      }
-
-    } else if (Object.keys(updated)[0] === "struct_org1") {
-      if (struct_org[updated.struct_org1].indexOf(this.state.rows[fromRow].struct_org2) !== -1 || updated.struct_org1 === '') {
-        this.setState(state => {
-          const rows = state.rows.slice();
-          for (let i = fromRow; i <= toRow; i++) {
-            rows[i] = { ...rows[i], ...updated };
-          }
-          return { rows };
-        });
-      }else{
-        alert('Combinaison erronée')
+      if(!count){
+        count = false;
+        this.setState({
+          openedWarning : true
+        })
+        
       }
     }else{
       this.setState(state => {
@@ -196,9 +196,11 @@ class App extends React.Component {
   };
   addRow(){
     let canvGrid = document.getElementsByClassName("react-grid-Canvas")[0];
-    canvGrid.scrollTop = canvGrid.scrollHeight;
+    canvGrid.scrollTop = 0;
+    let newRows = [...this.state.rows]
+    newRows.unshift({})
     this.setState(prevState => ({
-      rows: [...prevState.rows, {}]
+      rows: newRows
     }))
   }
 
@@ -244,10 +246,18 @@ class App extends React.Component {
       body: formData,
     })
   }
-  componentDidMount() {
+  componentWillMount() {
     this.setState({ isLoading: true });
     this.getData(this.props.dtl)
-
+  
+  }
+  componentDidMount(){
+    const comparer = (a, b) => {
+      return a['last_name'] > b['last_name'] ? 1 : -1;
+    };
+    this.setState({
+      rows:[...this.state.rows].sort(comparer)
+    })
   }
   render(){
     let gridData;
@@ -256,7 +266,15 @@ class App extends React.Component {
       }else{
           gridData = 
             <div className='gridData'>
+              <h1>DTL Listing</h1>
+            <Button onClick={this.handleSubmit} color="primary" variant="contained" id='buttonValidate'>
+              Valider
+            </Button>
+            <Button onClick={this.addRow} color="primary" variant="contained" id='addingRowButton'>
+              Ajouter un utilisateur
+            </Button>
             <ReactDataGrid 
+              ref={(datagrid) => { this.refGrid = datagrid; }}
               columns={this.state.columns}
               rowGetter={i => this.state.rows[i]}
               rowsCount={this.state.rows.length}
@@ -272,18 +290,16 @@ class App extends React.Component {
               }
 
               } />
-            <Button color="primary" variant="contained" id='buttonValidate'>
-                <input onClick={this.handleSubmit} type='submit' value="Valider" />
-            </Button>
-            <Button color="primary" variant="contained" id='addingRowButton'>
-              <input onClick={this.addRow} type='submit' value="Ajouter un utilisateur" />
-            </Button>
             <FormDialog
               open={this.state.openedDialogDelete}
               handleClose={this.closeDialog}
               handleClickOpen={this.openDialog}
               handleDeleteRow={this.deleteRow}
               deletingRow={this.state.deletingRow}
+            />
+            <SnackBarError
+              open={this.state.openedWarning}
+              handleClose={this.closeWarning}
             />
           </div>
 
