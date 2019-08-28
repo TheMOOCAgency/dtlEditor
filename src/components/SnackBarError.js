@@ -44,7 +44,7 @@ export default function SnackBarError(props) {
                         }
                     }
                 }
-                
+                autoHideDuration={3000}
             >
                 <SnackbarContent
                 className={classes.warning}
