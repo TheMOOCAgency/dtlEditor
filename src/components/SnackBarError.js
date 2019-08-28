@@ -57,7 +57,6 @@ export default function SnackBarError(props) {
                         color="inherit" 
                         key="close"
                         aria-label="close"
-                        color="inherit"
                         className={'close'}
                         onClick={props.handleClose}
                     >

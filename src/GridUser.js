@@ -114,7 +114,6 @@ class App extends React.Component {
           struct_org1.push(result[x].struct_org1)
         }
       }
-      
       if (struct_org2.indexOf(result[x].struct_org1) === -1) {
         if (struct_org2.indexOf(result[x].struct_org2) === -1 && result[x].struct_org2 !== '' && result[x].struct_org2 !== undefined) {
           struct_org2.push(result[x].struct_org2)
@@ -128,7 +127,7 @@ class App extends React.Component {
           if (struct_org[x] === undefined) {
             struct_org[x] = []
           }
-          if (result[x2].struct_org2 != '' || result[x2].struct_org2 !== undefined) {
+          if (result[x2].struct_org2 !== '' || result[x2].struct_org2 !== undefined) {
             struct_org[x].push(result[x2].struct_org2)
           }
         }
@@ -147,8 +146,7 @@ class App extends React.Component {
   }
 
   onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
-    
-    if (Object.keys(updated)[0] === "Uid"){
+    if (Object.keys(updated)[0] === "Uid" && this.state.rows[toRow].Uid !== updated.Uid){
       this.closeWarning();
       let count = false;
       for (let i = 1; i < this.props.cultureDigital.length; i++) {
@@ -157,8 +155,8 @@ class App extends React.Component {
           let newUser = {
             Uid: this.props.cultureDigital[i].Uid,
             email: this.props.cultureDigital[i].email,
-            first_name: this.props.cultureDigital[i].first_name,
-            last_name: this.props.cultureDigital[i].last_name,
+            first_name: this.props.cultureDigital[i].first_name.toLowerCase(),
+            last_name: this.props.cultureDigital[i].last_name.toLowerCase(),
             role: this.props.cultureDigital[i].role,
             struct_org1: "",
             struct_org2: ""
@@ -236,8 +234,12 @@ class App extends React.Component {
   }
 
   handleSubmit() {
+    let dataToSend = this.state.rows.filter((value,index,arr)=>{
+      return value.Uid !== undefined
+    })
+
     let formData = new FormData();
-    formData.append('data', JSON.stringify(this.state.rows))
+    formData.append('data', JSON.stringify(dataToSend))
     fetch(window.location.href, {
       method: 'POST',
       headers: {
