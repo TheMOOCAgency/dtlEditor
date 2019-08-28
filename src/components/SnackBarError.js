@@ -44,16 +44,13 @@ export default function SnackBarError(props) {
                         }
                     }
                 }
-                autoHideDuration={3000}
+                
             >
                 <SnackbarContent
                 className={classes.warning}
-                ContentProps={{
-                    'aria-describedby': 'Error-Uid',
-                }}
                 message={<span id="client-snackbar">
                     <WarningIcon className={clsx(classes.icon, classes.iconVariant)} />
-                    Id inexistant
+                    Incorrect UID
                 </span>}
                 action={[
                     <IconButton

@@ -108,15 +108,17 @@ class App extends React.Component {
   }
 
   getDataStruct(result) {
+    console.log(result)
+
     Object.keys(result).map((x) => {
       if (struct_org1.indexOf(result[x].struct_org1) === -1) {
         if (result[x].struct_org1 !== undefined) {
           struct_org1.push(result[x].struct_org1)
         }
-
       }
+      
       if (struct_org2.indexOf(result[x].struct_org1) === -1) {
-        if (result[x].struct_org2 !== '' && result[x].struct_org2 !== undefined) {
+        if (struct_org2.indexOf(result[x].struct_org2) === -1 && result[x].struct_org2 !== '' && result[x].struct_org2 !== undefined) {
           struct_org2.push(result[x].struct_org2)
         }
       }
@@ -139,8 +141,8 @@ class App extends React.Component {
     }
 
     struct_org[''] = [...struct_org2]
-    struct_org['-ALL'] = [...struct_org2]
-    struct_org1.push('-ALL')
+    struct_org['all'] = [...struct_org2]
+    struct_org1.push('all')
     struct_org2.push('')
     struct_org1.sort()
     struct_org2.sort()
@@ -270,15 +272,15 @@ class App extends React.Component {
       }else{
           gridData = 
             <div className='gridData'>
-              <h1>DTL Listing</h1>
-            <Button onClick={this.handleSubmit} color="primary" variant="contained" id='buttonValidate'>
-              Valider
+            <h1 id={'dtlEditorTitle'}>DTL Scope Editor</h1>
+            <Button style={{ borderRadius: 15, padding: "10px 20px", backgroundColor: '#0098dc', fontSize: '14px'}} onClick={this.handleSubmit} color="primary" variant="contained" id='buttonValidate'>
+              Submit
             </Button>
-            <Button onClick={this.addRow} color="primary" variant="contained" id='addingRowButton'>
-              Ajouter un utilisateur
+            <Button style={{ borderRadius: 15, padding: "10px 20px", backgroundColor: '#0098dc', fontSize: '14px',margin:'10px' }} onClick={this.addRow} color="primary" variant="contained" id='addingRowButton'>
+              Add a DTL Scope 
             </Button>
               {this.state.changing && 
-                <p className={'changeWarning'}>Vous avez éventuellement des changements en attente</p>
+              <p className={'changeWarning'}>You may have unsaved changes </p>
               }
             <ReactDataGrid 
               ref={(datagrid) => { this.refGrid = datagrid; }}
@@ -287,8 +289,7 @@ class App extends React.Component {
               rowsCount={this.state.rows.length}
               onGridRowsUpdated={this.onGridRowsUpdated}
               enableCellSelect={true}
-              minHeight={520}
-              headerRowHeight={50}
+              headerRowHeight={35}
               getCellActions={this.getCellActions}
               onGridSort={(sortColumn, sortDirection) => {
                this.setState({
