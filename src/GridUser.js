@@ -108,8 +108,6 @@ class App extends React.Component {
   }
 
   getDataStruct(result) {
-    console.log(result)
-
     Object.keys(result).map((x) => {
       if (struct_org1.indexOf(result[x].struct_org1) === -1) {
         if (result[x].struct_org1 !== undefined) {
