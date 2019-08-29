@@ -243,8 +243,6 @@ class App extends React.Component {
     fetch(window.location.href, {
       method: 'POST',
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
         'X-CSRFToken': window.props.csrfToken
       },
       body: formData,
