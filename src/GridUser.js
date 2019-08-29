@@ -240,14 +240,21 @@ class App extends React.Component {
 
     let formData = new FormData();
     formData.append('data', JSON.stringify(dataToSend))
+
     fetch(window.location.href, {
       method: 'POST',
       headers: {
         'X-CSRFToken': window.props.csrfToken
       },
       body: formData,
+    }).then(function (data) {
+      window.location.reload()
     })
-    window.location.reload()
+      .catch(function (error) {
+        alert('An error has occurred, no data has been sent !')
+    });
+
+    
   }
 
   componentWillMount() {
