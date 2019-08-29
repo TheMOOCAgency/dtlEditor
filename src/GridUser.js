@@ -267,12 +267,12 @@ class App extends React.Component {
   }
 
   componentDidMount(){
-   /* const comparer = (a, b) => {
+    const comparer = (a, b) => {
       return a['last_name'] > b['last_name'] ? 1 : -1;
     };
     this.setState({
       rows:[...this.state.rows].sort(comparer)
-    })*/
+    })
   }
 
   render(){
