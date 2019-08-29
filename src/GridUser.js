@@ -146,6 +146,9 @@ class App extends React.Component {
   }
 
   onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
+    function capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+    }
     if (Object.keys(updated)[0] === "Uid" && this.state.rows[toRow].Uid !== updated.Uid){
       this.closeWarning();
       let count = false;
@@ -155,8 +158,8 @@ class App extends React.Component {
           let newUser = {
             Uid: this.props.cultureDigital[i].Uid,
             email: this.props.cultureDigital[i].email,
-            first_name: this.props.cultureDigital[i].first_name.toLowerCase(),
-            last_name: this.props.cultureDigital[i].last_name.toLowerCase(),
+            first_name: capitalizeFirstLetter(this.props.cultureDigital[i].first_name),
+            last_name: capitalizeFirstLetter(this.props.cultureDigital[i].last_name),
             role: this.props.cultureDigital[i].role,
             struct_org1: "",
             struct_org2: ""
@@ -214,7 +217,8 @@ class App extends React.Component {
 
   deleteRow (row){
     this.setState(prevState => ({
-      rows: [...prevState.rows.slice(0, this.state.rows.indexOf(row)), ...prevState.rows.slice(this.state.rows.indexOf(row) + 1)]
+      rows: [...prevState.rows.slice(0, this.state.rows.indexOf(row)), ...prevState.rows.slice(this.state.rows.indexOf(row) + 1)],
+      changing: true
     }))
   }
 
@@ -263,12 +267,12 @@ class App extends React.Component {
   }
 
   componentDidMount(){
-    const comparer = (a, b) => {
+   /* const comparer = (a, b) => {
       return a['last_name'] > b['last_name'] ? 1 : -1;
     };
     this.setState({
       rows:[...this.state.rows].sort(comparer)
-    })
+    })*/
   }
 
   render(){
@@ -279,7 +283,8 @@ class App extends React.Component {
           gridData = 
             <div className='gridData'>
             <h1 id={'dtlEditorTitle'}>DTL Scope Editor</h1>
-            <Button style={{ borderRadius: 15, padding: "10px 20px", backgroundColor: '#0098dc', fontSize: '14px'}} onClick={this.handleSubmit} color="primary" variant="contained" id='buttonValidate'>
+            <i>Changes made on this interface are displayed in real time but DTL scopes are updated each night, between midnight and 6am (French Time). DTLs may then wait a maximum of 24 hours before seeing any change made here.</i>
+            <div><Button style={{ borderRadius: 15, padding: "10px 20px", backgroundColor: '#0098dc', fontSize: '14px'}} onClick={this.handleSubmit} color="primary" variant="contained" id='buttonValidate'>
               Submit
             </Button>
             <Button style={{ borderRadius: 15, padding: "10px 20px", backgroundColor: '#0098dc', fontSize: '14px',margin:'10px' }} onClick={this.addRow} color="primary" variant="contained" id='addingRowButton'>
@@ -288,6 +293,7 @@ class App extends React.Component {
               {this.state.changing && 
               <p className={'changeWarning'}>You may have unsaved changes </p>
               }
+            </div>
             <ReactDataGrid 
               ref={(datagrid) => { this.refGrid = datagrid; }}
               columns={this.state.columns}

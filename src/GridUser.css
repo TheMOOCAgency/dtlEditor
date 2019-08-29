@@ -1,3 +1,4 @@
+*{margin:0px;padding:0px}
 @font-face {
     font-family: 'Roboto';
     src: url('fonts/Roboto/Roboto-Regular.ttf');
@@ -5,7 +6,8 @@
 
 body {
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-    padding: 10px;
+    padding: 0px 10px ;
+    overflow-y: hidden;
 }
 
 .circularProgress {
@@ -30,7 +32,7 @@ body {
 }
 
 .react-grid-Grid {
-    min-height: 84vh!important;
+    min-height: 70vh!important;
     overflow-y: hidden;
 }
 
