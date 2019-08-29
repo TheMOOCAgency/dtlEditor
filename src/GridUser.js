@@ -249,6 +249,7 @@ class App extends React.Component {
       },
       body: formData,
     })
+    window.location.reload()
   }
 
   componentWillMount() {
