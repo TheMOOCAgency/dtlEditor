@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDataGrid from 'react-data-grid';
-import './ScopeEditor.css';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Editors } from "react-data-grid-addons";
 import Button from '@material-ui/core/Button';

@@ -4,9 +4,7 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import { green } from '@material-ui/core/colors';
 import { makeStyles } from '@material-ui/core/styles';
-import WarningIcon from '@material-ui/icons/Warning';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
-import clsx from 'clsx';
 export default function SnackBarSuccess(props) {
 
     const useStyles1 = makeStyles(theme => ({

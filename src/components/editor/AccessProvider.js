@@ -48,7 +48,7 @@ class AccessProvider extends React.Component {
     };
     onGrantAccess (){
         if (document.getElementById('listUsersToChange').value.split("\n").some(
-            (Uid) => { return Uid != "" }
+            (Uid) => { return Uid !== "" }
         )){
             let warning = [];
             let rowUid = this.state.rows.map((row) => {
@@ -60,12 +60,16 @@ class AccessProvider extends React.Component {
                         return Uid
                     }
                 } else {
-                    warning.push(Uid)
+                    if(Uid !== ''){
+                        warning.push(Uid)
+                    }
+                    return null
                 }
             })
             
             
             stringValue = [...this.state.has_access, ...stringValue]
+            console.log(warning)
             this.setState({
                 rows: this.getRows(stringValue),
                 has_access: [...stringValue]
@@ -88,7 +92,10 @@ class AccessProvider extends React.Component {
                     return Uid
                 }
             } else {
-                warning.push(Uid)
+                if (Uid !== '') {
+                    warning.push(Uid)
+                }
+                return null
             } 
         })
         stringValue = this.state.has_access.filter((Uid) => {
