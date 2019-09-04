@@ -3,16 +3,17 @@ import 'react-app-polyfill/stable';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import GridUser from './GridUser';
+import PsaAccessRightsManager from './PsaAccessRightsManager';
 import * as serviceWorker from './serviceWorker';
 
 
     ReactDOM.render(
         <div id='wrapper'>
-            <GridUser 
-                cultureDigital={window.props.usersinfo}
-                dtl={window.props.dtlinfo}
-                struct_org={window.props.structinfos} />
+            <PsaAccessRightsManager 
+                usersinfo={window.props.usersinfo}
+                dtlinfo={window.props.dtlinfo}
+                structinfos={window.props.structinfos} 
+                accessInfo={window.props.accessInfo} />
         </div>
         , document.getElementById('root'));
 

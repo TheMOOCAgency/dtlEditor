@@ -1,18 +1,18 @@
 import React from 'react';
 import ReactDataGrid from 'react-data-grid';
-import './GridUser.css';
+import './ScopeEditor.css';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Editors } from "react-data-grid-addons";
 import Button from '@material-ui/core/Button';
-import FormDialog from './components/FormDialog'
-import SnackBarError from './components/SnackBarError'
+import FormDialog from '../dialog/FormDialog'
+import SnackBarError from '../dialog/SnackBarError'
 const { DropDownEditor } = Editors;
 
 const struct_org = {};
 const struct_org1 = []; 
 const struct_org2 = [];
 
-class App extends React.Component {
+class ScopeEditor extends React.Component {
   constructor(props){
     super(props);
     this.state={
@@ -241,7 +241,6 @@ class App extends React.Component {
     let dataToSend = this.state.rows.filter((value,index,arr)=>{
       return value.Uid !== undefined
     })
-
     let formData = new FormData();
     formData.append('data', JSON.stringify(dataToSend))
 
@@ -256,9 +255,7 @@ class App extends React.Component {
     })
       .catch(function (error) {
         alert('An error has occurred, no data has been sent !')
-    });
-
-    
+    }); 
   }
 
   componentWillMount() {
@@ -276,59 +273,58 @@ class App extends React.Component {
   }
 
   render(){
-    let gridData;
-      if (this.state.isLoading) {
-        gridData = <div className='circularProgress'><CircularProgress color="primary" /></div>
-      }else{
-          gridData = 
-            <div className='gridData'>
-            <h1 id={'dtlEditorTitle'}>DTL Scope Editor</h1>
-            <i>Changes made on this interface are displayed in real time but DTL scopes are updated each night, between midnight and 6am (French Time). DTLs may then wait a maximum of 24 hours before seeing any change made here.</i>
-            <div><Button style={{ borderRadius: 15, padding: "10px 20px", backgroundColor: '#0098dc', fontSize: '14px'}} onClick={this.handleSubmit} color="primary" variant="contained" id='buttonValidate'>
-              Submit
-            </Button>
-            <Button style={{ borderRadius: 15, padding: "10px 20px", backgroundColor: '#0098dc', fontSize: '14px',margin:'10px' }} onClick={this.addRow} color="primary" variant="contained" id='addingRowButton'>
-              Add a DTL Scope 
-            </Button>
-              {this.state.changing && 
-              <p className={'changeWarning'}>You may have unsaved changes </p>
-              }
-            </div>
-            <ReactDataGrid 
-              ref={(datagrid) => { this.refGrid = datagrid; }}
-              columns={this.state.columns}
-              rowGetter={i => this.state.rows[i]}
-              rowsCount={this.state.rows.length}
-              onGridRowsUpdated={this.onGridRowsUpdated}
-              enableCellSelect={true}
-              headerRowHeight={35}
-              getCellActions={this.getCellActions}
-              onGridSort={(sortColumn, sortDirection) => {
-               this.setState({
-                 rows: this.sortRows(this.state.rows, sortColumn, sortDirection)
-               })
-              }
-
-              } />
-            <FormDialog
-              open={this.state.openedDialogDelete}
-              handleClose={this.closeDialog}
-              handleClickOpen={this.openDialog}
-              handleDeleteRow={this.deleteRow}
-              deletingRow={this.state.deletingRow}
-            />
-            <SnackBarError
-              open={this.state.openedWarning}
-              handleClose={this.closeWarning}
-            />
-          </div>
-
-      }
       return (
-        <div className="App">
-           {gridData}
+        <div className="App scopeEditor">
+          {this.state.isLoading ? 
+          (
+              <div className='circularProgress'><CircularProgress color="primary" /></div>
+          )  :
+          (
+              <div>
+                <h1 id={'dtlEditorTitle'}>DTL Scope Editor</h1>
+                <i>Changes made on this interface are displayed in real time but DTL scopes are updated each night, between midnight and 6am (French Time). DTLs may then wait a maximum of 24 hours before seeing any change made here.</i>
+                <div><Button style={{ borderRadius: 15, padding: "10px 20px", fontSize: '14px' }} onClick={this.handleSubmit} color="primary" variant="contained" id='buttonValidate'>
+                  Submit
+            </Button>
+                  <Button style={{ borderRadius: 15, padding: "10px 20px", fontSize: '14px', margin: '10px' }} onClick={this.addRow} color="primary" variant="contained" id='addingRowButton'>
+                    Add a DTL Scope
+            </Button>
+                  {this.state.changing &&
+                    <p className={'changeWarning'}>You may have unsaved changes </p>
+                  }
+                </div>
+                <ReactDataGrid
+                  ref={(datagrid) => { this.refGrid = datagrid; }}
+                  columns={this.state.columns}
+                  rowGetter={i => this.state.rows[i]}
+                  rowsCount={this.state.rows.length}
+                  onGridRowsUpdated={this.onGridRowsUpdated}
+                  enableCellSelect={true}
+                  headerRowHeight={35}
+                  getCellActions={this.getCellActions}
+                  onGridSort={(sortColumn, sortDirection) => {
+                    this.setState({
+                      rows: this.sortRows(this.state.rows, sortColumn, sortDirection)
+                    })
+                  }
+
+                  } />
+                <FormDialog
+                  open={this.state.openedDialogDelete}
+                  handleClose={this.closeDialog}
+                  handleClickOpen={this.openDialog}
+                  handleDeleteRow={this.deleteRow}
+                  deletingRow={this.state.deletingRow}
+                />
+                <SnackBarError
+                  open={this.state.openedWarning}
+                  handleClose={this.closeWarning}
+                />
+              </div>
+          )
+        }
        </div>
       );
    }
   }
-export default App;
+export default ScopeEditor;

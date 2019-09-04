@@ -1,12 +1,16 @@
-*{margin:0px;padding:0px}
+* {
+    margin: 0px;
+    padding: 0px
+}
+
 @font-face {
     font-family: 'Roboto';
-    src: url('fonts/Roboto/Roboto-Regular.ttf');
+    src: url('../../fonts/Roboto/Roboto-Regular.ttf');
 }
 
 body {
     font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-    padding: 0px 10px ;
+    padding: 0px 10px;
     overflow-y: hidden;
 }
 
@@ -16,14 +20,19 @@ body {
     left: 45%
 }
 
-.gridData {
-    height: 100%!important;
-}
-
 .changeWarning {
     color: red;
     font-style: italic;
     font-size: 14px;
+}
+
+.react-grid-Container {
+    width : 99%!important;
+    height: 100vh;
+}
+
+.react-grid-Canvas {
+    height: 100%!important;
 }
 
 #client-snackbar {
@@ -31,8 +40,13 @@ body {
     display: flex;
 }
 
-.react-grid-Grid {
+.scopeEditor .react-grid-Grid {
     min-height: 70vh!important;
+    overflow-y: hidden;
+}
+
+.Accessprovider .react-grid-Grid {
+    min-height: 60vh!important;
     overflow-y: hidden;
 }
 
