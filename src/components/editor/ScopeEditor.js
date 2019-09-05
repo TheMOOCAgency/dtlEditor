@@ -5,6 +5,9 @@ import { Editors } from "react-data-grid-addons";
 import Button from '@material-ui/core/Button';
 import FormDialog from '../dialog/FormDialog'
 import SnackBarError from '../dialog/SnackBarError'
+import { withStyles } from '@material-ui/styles';
+import styles from '../../assets/styleHook.js'
+
 const { DropDownEditor } = Editors;
 
 const struct_org = {};
@@ -21,7 +24,9 @@ class ScopeEditor extends React.Component {
       openedDialogDelete: false,
       deletingRow:{},
       openedWarning : false,
-      changing : false
+      changing : false,
+      height: window.innerHeight
+
     }
     this.getData = this.getData.bind(this);
     this.getDataStruct = this.getDataStruct.bind(this);
@@ -31,8 +36,13 @@ class ScopeEditor extends React.Component {
     this.addRow = this.addRow.bind(this);    
     this.getCellActions = this.getCellActions.bind(this);
     this.deleteRow = this.deleteRow.bind(this);
+    this.onResize = this.onResize.bind(this);
   }
-
+  onResize() {
+    this.setState({
+      height: window.innerHeight
+    });
+  }
   closeWarning = () => {
     this.setState({
       openedWarning: false,
@@ -53,6 +63,7 @@ class ScopeEditor extends React.Component {
   }
 
   getData() {
+    
     let columnsSorted = [
       Object.keys(this.props.dtl[0])[2], Object.keys(this.props.dtl[0])[1], Object.keys(this.props.dtl[0])[0], Object.keys(this.props.dtl[0])[6], Object.keys(this.props.dtl[0])[4], Object.keys(this.props.dtl[0])[3]
     ]
@@ -64,7 +75,7 @@ class ScopeEditor extends React.Component {
           editable: true,
           sortable: true,
           resizable : true,
-          width: 125,
+          width: 110,
           editor: <DropDownEditor options={struct_org1} />
         }
       } else if (data === 'struct_org2') {
@@ -74,7 +85,7 @@ class ScopeEditor extends React.Component {
           editable: true,
           sortable: true,
           resizable: true,
-          width: 125,
+          width: 110,
           editor: <DropDownEditor options={struct_org2} />
         }
       }else if (data === 'Uid'){
@@ -269,6 +280,7 @@ class ScopeEditor extends React.Component {
     this.setState({
       rows:[...this.state.rows].sort(comparer)
     })
+    window.addEventListener("resize", this.onResize);
   }
 
   render(){
@@ -280,16 +292,16 @@ class ScopeEditor extends React.Component {
           )  :
           (
               <div>
-                <h1 id={'dtlEditorTitle'}>DTL Scope Editor</h1>
-                <i>Changes made on this interface are displayed in real time but DTL scopes are updated each night, between midnight and 6am (French Time). DTLs may then wait a maximum of 24 hours before seeing any change made here.</i>
-                <div><Button style={{ borderRadius: 15, padding: "10px 20px", fontSize: '14px' }} onClick={this.handleSubmit} color="primary" variant="contained" id='buttonValidate'>
+                <h1 className={this.props.classes.title}>DTL Scope Editor</h1>
+                <i style={{ color: '#777'}}>Changes made on this interface are displayed in real time but DTL scopes are updated each night, between midnight and 6am (French Time). DTLs may then wait a maximum of 24 hours before seeing any change made here.</i>
+                <div><Button className={this.props.classes.button} onClick={this.handleSubmit} color="primary" variant="contained" id='buttonValidate'>
                   Submit
             </Button>
-                  <Button style={{ borderRadius: 15, padding: "10px 20px", fontSize: '14px', margin: '10px' }} onClick={this.addRow} color="primary" variant="contained" id='addingRowButton'>
+                  <Button className={this.props.classes.button}onClick={this.addRow} color="primary" variant="contained" id='addingRowButton'>
                     Add a DTL Scope
             </Button>
                   {this.state.changing &&
-                    <p className={'changeWarning'}>You may have unsaved changes </p>
+                    <p className={'changeWarning'} style={{color:'red',fontStyle:'italic'}} >You may have unsaved changes </p>
                   }
                 </div>
                 <ReactDataGrid
@@ -300,6 +312,7 @@ class ScopeEditor extends React.Component {
                   onGridRowsUpdated={this.onGridRowsUpdated}
                   enableCellSelect={true}
                   headerRowHeight={35}
+                  minHeight={this.state.height - 260}
                   getCellActions={this.getCellActions}
                   onGridSort={(sortColumn, sortDirection) => {
                     this.setState({
@@ -326,4 +339,4 @@ class ScopeEditor extends React.Component {
       );
    }
   }
-export default ScopeEditor;
+export default withStyles(styles)(ScopeEditor);

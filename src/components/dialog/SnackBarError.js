@@ -12,17 +12,10 @@ export default function SnackBarError(props) {
     const useStyles1 = makeStyles(theme => ({
         warning: {
             backgroundColor: amber[700],
+            fontSize: "14px",
         },
         icon: {
             fontSize: 20,
-        },
-        iconVariant: {
-            opacity: 0.9,
-            marginRight: theme.spacing(1),
-        },
-        message: {
-            display: 'flex',
-            alignItems: 'center',
         },
     }));
     const classes = useStyles1();

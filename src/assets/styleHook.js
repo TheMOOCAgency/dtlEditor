@@ -1,6 +1,6 @@
 const styles = {
     title: {
-        fontSize: '22px',
+        fontSize: '24px',
         fontWeight: '400'
     },
     button: {
