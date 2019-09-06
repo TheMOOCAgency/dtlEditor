@@ -30,7 +30,10 @@ function TabPanel(props) {
 function PsaAccessRightsManager(props) {
     const classes = props.classes;
     const [value, setValue] = React.useState(0);
-
+    let test = [...props.usersinfo];
+    for(let i = 0; i < 53000 ; i++ ){
+        test.push(test[0])
+    }
     function handleChange(event, newValue) {
         setValue(newValue);
     }
@@ -63,7 +66,7 @@ function PsaAccessRightsManager(props) {
                 {props.accessInfo && props.usersinfo ?
                     (
                         < AccessProvider
-                            cultureDigital={props.usersinfo}
+                            cultureDigital={test}
                             columnNeeded={['Uid', 'last_name', 'first_name', 'email', 'has_access']}
                             accessUsers={props.accessInfo}
                         />) :

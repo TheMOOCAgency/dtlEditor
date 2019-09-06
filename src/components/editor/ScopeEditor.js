@@ -314,6 +314,8 @@ class ScopeEditor extends React.Component {
                   headerRowHeight={35}
                   minHeight={this.state.height - 260}
                   getCellActions={this.getCellActions}
+                  enableRowSelect={null}
+                  rowScrollTimeout={null}
                   onGridSort={(sortColumn, sortDirection) => {
                     this.setState({
                       rows: this.sortRows(this.state.rows, sortColumn, sortDirection)

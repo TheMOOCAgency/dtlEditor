@@ -8,7 +8,6 @@ import WarningIcon from '@material-ui/icons/Warning';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import clsx from 'clsx';
 export default function SnackBarError(props) {
-   
     const useStyles1 = makeStyles(theme => ({
         warning: {
             backgroundColor: amber[700],

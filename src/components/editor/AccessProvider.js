@@ -74,6 +74,7 @@ class AccessProvider extends React.Component {
                     if(!this.state.has_access.includes(Uid)){
                         return Uid
                     }
+                    return null
                 } else {
                     if(Uid !== ''){
                         warning.push(Uid)
@@ -92,7 +93,7 @@ class AccessProvider extends React.Component {
     }
     onRemoveAccess() { //********************************************A faire le checking d'erreur */
         if (document.getElementById('listUsersToChange').value.split("\n").some(
-            (Uid) => { return Uid != "" }
+            (Uid) => { return Uid !== "" }
         )) {
         let warning = [];
         let rowUid = this.state.rows.map((row) => {
@@ -103,6 +104,7 @@ class AccessProvider extends React.Component {
                 if (this.state.has_access.includes(Uid)){
                     return Uid
                 }
+                return null
             } else {
                 if (Uid !== '') {
                     warning.push(Uid)
@@ -140,7 +142,7 @@ class AccessProvider extends React.Component {
                     snackBarHandler: {
                         open: true,
                         type: "warning",
-                        message: "Incorrect Uid(s): " + warning.join(' ')
+                        message: "Incorrect Uid(s): \r\n" + warning.join(' \r\n - ')
                     }
                 })
             } else {
@@ -188,6 +190,8 @@ class AccessProvider extends React.Component {
                     rowsCount={this.state.rows.length}
                     enableCellSelect={true}
                     minHeight={this.state.height - 305}
+                    enableRowSelect={null}
+                    rowScrollTimeout={null}
                     onRowDoubleClick={e=>{
                         document.getElementById('listUsersToChange').value = document.getElementById('listUsersToChange').value + this.state.rows[e].Uid + '\n';
                     }}
@@ -201,6 +205,7 @@ class AccessProvider extends React.Component {
                 />
                 <SnackBar
                     snackBarState={this.state.snackBarHandler}
+                    
                     handleClose={() => {
                         this.setState({
                             snackBarHandler: {

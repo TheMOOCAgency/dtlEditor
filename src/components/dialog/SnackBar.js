@@ -12,11 +12,15 @@ import clsx from 'clsx';
 const useStyles1 = makeStyles(theme => ({
     warning: {
         backgroundColor: amber[700],
-        fontSize: "14px"
+        fontSize: "14px",
+        maxHeight: "500px",
+        overflow: "auto"
     },
     success: {
         backgroundColor: green[700],
-        fontSize: "14px"
+        fontSize: "14px",
+        maxHeight: "500px",
+        overflow: "auto"
     },
     icon: {
         fontSize: 20,
@@ -42,15 +46,11 @@ export default function SnackBarSuccess(props) {
                 }}
                 open={props.snackBarState.open}
                 onClose={(event, reason) => {
-                    if (reason === 'clickaway') {
-                        return;
-                    }
-                    else {
+
                         return props.handleClose()
-                    }
+                    
                 }
                 }
-                autoHideDuration={3000}
             >
                 <SnackbarContent
                     className={classes[props.snackBarState.type]}
@@ -62,8 +62,7 @@ export default function SnackBarSuccess(props) {
                             (
                                 <WarningIcon className={clsx(classes.icon, classes.iconVariant)} />
                             )}
-                      
-                        {props.snackBarState.message}
+                            <p style={{whiteSpace: "pre-wrap"}}>{props.snackBarState.message}</p>
                         </span>
                         }
                     action={[
