@@ -13,8 +13,6 @@ const styles = {
     textearea : {
         minWidth : '70vh',
         margin : '10px 0px 0px 0px',
-        overflow : 'auto!important',
-        maxHeight: '120px!important'
     },
     tab: {
         fontSize: '16px!important',

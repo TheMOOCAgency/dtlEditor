@@ -5,7 +5,7 @@ import styles from '../../assets/styleHook.js'
 import { withStyles } from '@material-ui/styles';
 import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import SnackBar from '../dialog/SnackBar'
-
+import TextField from '@material-ui/core/TextField';
 class AccessProvider extends React.Component {
     constructor(props) {
         super(props);
@@ -142,7 +142,7 @@ class AccessProvider extends React.Component {
                     snackBarHandler: {
                         open: true,
                         type: "warning",
-                        message: "Incorrect Uid(s): \r\n" + warning.join(' \r\n - ')
+                        message: "Incorrect Uid(s): \r\n - " + warning.join(' \r\n - ')
                     }
                 })
             } else {
@@ -174,7 +174,15 @@ class AccessProvider extends React.Component {
         return (
             <div className="App Accessprovider">
                 <h1 className={this.props.classes.title}>Digital Barometer Invitations</h1>
-                <TextareaAutosize id='listUsersToChange' className={this.props.classes.textearea} rows={5} placeholder="Type here(or double click on) UID(s) of the user(s) you want to grant or remove access to (one UID per line)"/>
+                <TextField
+                    id="listUsersToChange"
+                    multiline
+                    rowsMax="5"
+                    variant='outlined'
+                    placeholder='Type here(or double click on) UID(s) of the user(s) you want to grant or remove access to (one UID per line)'
+                    className={this.props.classes.textearea} 
+                />
+               
                 <div>
                     <Button className={this.props.classes.button} onClick={this.onGrantAccess} color="primary" variant="contained" id='buttonValidate'>
                     Grant Access
@@ -193,7 +201,10 @@ class AccessProvider extends React.Component {
                     enableRowSelect={null}
                     rowScrollTimeout={null}
                     onRowDoubleClick={e=>{
-                        document.getElementById('listUsersToChange').value = document.getElementById('listUsersToChange').value + this.state.rows[e].Uid + '\n';
+                        let textInput = document.getElementById('listUsersToChange')
+                        textInput.focus();
+                        textInput.scrollTo(0, textInput.scrollHeight)
+                        textInput.value = textInput.value + this.state.rows[e].Uid + '\n';
                     }}
                     onGridSort={(sortColumn, sortDirection) => {
                         this.setState({

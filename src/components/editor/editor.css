@@ -19,7 +19,6 @@ body {
     left: 45%
 }
 
-
 .MuiTypography-body1 {
     font-size: 1.5rem!important
 }
@@ -61,4 +60,10 @@ h2.MuiTypography-h6 {
 
 span.MuiButton-label {
     font-size: 12px;
+}
+
+#listUsersToChange{
+    overflow-y: scroll!important;
+    font-size: 14px;
+    min-height: 80px
 }
