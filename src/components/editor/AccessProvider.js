@@ -3,7 +3,6 @@ import ReactDataGrid from 'react-data-grid';
 import Button from '@material-ui/core/Button';
 import styles from '../../assets/styleHook.js'
 import { withStyles } from '@material-ui/styles';
-import TextareaAutosize from '@material-ui/core/TextareaAutosize';
 import SnackBar from '../dialog/SnackBar'
 import TextField from '@material-ui/core/TextField';
 class AccessProvider extends React.Component {
@@ -197,6 +196,7 @@ class AccessProvider extends React.Component {
                     rowGetter={i => this.state.rows[i]}
                     rowsCount={this.state.rows.length}
                     enableCellSelect={true}
+                    headerRowHeight={35}
                     minHeight={this.state.height - 305}
                     enableRowSelect={null}
                     rowScrollTimeout={null}

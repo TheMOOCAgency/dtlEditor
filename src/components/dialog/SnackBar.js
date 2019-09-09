@@ -31,7 +31,6 @@ const useStyles1 = makeStyles(theme => ({
     },
     message: {
         display: 'flex',
-        alignItems: 'center',
     },
 }));
 export default function SnackBarSuccess(props) {
@@ -62,7 +61,7 @@ export default function SnackBarSuccess(props) {
                             (
                                 <WarningIcon className={clsx(classes.icon, classes.iconVariant)} />
                             )}
-                            <p style={{whiteSpace: "pre-wrap"}}>{props.snackBarState.message}</p>
+                            <span style={{whiteSpace: "pre-wrap"}}>{props.snackBarState.message}</span>
                         </span>
                         }
                     action={[
