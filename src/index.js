@@ -13,7 +13,7 @@ import * as serviceWorker from './serviceWorker';
                 usersinfo={window.props.usersinfo}
                 dtlinfo={window.props.dtlinfo}
                 structinfos={window.props.structinfos} 
-                accessInfo={window.props.accessInfo} />
+                accessInfo={window.props.invited_user_file} />
         </div>
         , document.getElementById('root'));
 

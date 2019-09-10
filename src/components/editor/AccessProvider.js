@@ -126,7 +126,7 @@ class AccessProvider extends React.Component {
     handleSubmit(warning) {
         const that = this;
         let formData = new FormData();
-        formData.append('data', JSON.stringify(this.state.has_access))
+        formData.append('invited', JSON.stringify(this.state.has_access))
        
         fetch(window.location.href, {
             method: 'POST',
