@@ -252,7 +252,8 @@ class ScopeEditor extends React.Component {
       return value.Uid !== undefined
     })
     let formData = new FormData();
-    formData.append('data', JSON.stringify(dataToSend))
+    
+    formData.append('dtl', JSON.stringify(dataToSend))
 
     fetch(window.location.href, {
       method: 'POST',
