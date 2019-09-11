@@ -206,7 +206,7 @@ class AccessProvider extends React.Component {
                     onRowDoubleClick={e=>{
                         let textInput = document.getElementById('listUsersToChange')
                         textInput.focus();
-                        textInput.scrollTo(0, textInput.scrollHeight)
+                        textInput.scrollTop = textInput.scrollHeight;
                         textInput.value = textInput.value + this.state.rows[e].Uid + '\n';
                     }}
                     onGridSort={(sortColumn, sortDirection) => {
