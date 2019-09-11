@@ -125,8 +125,12 @@ class AccessProvider extends React.Component {
     }
     handleSubmit(warning) {
         const that = this;
+        let dataToCSVFormat = this.state.has_access.map((data)=>{
+            return {Uid : data}
+        })
+        console.log(dataToCSVFormat)
         let formData = new FormData();
-        formData.append('invited', JSON.stringify(this.state.has_access))
+        formData.append('invited', JSON.stringify(dataToCSVFormat))
        
         fetch(window.location.href, {
             method: 'POST',
