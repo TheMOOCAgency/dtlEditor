@@ -128,7 +128,6 @@ class AccessProvider extends React.Component {
         let dataToCSVFormat = this.state.has_access.map((data)=>{
             return {Uid : data}
         })
-        console.log(dataToCSVFormat)
         let formData = new FormData();
         formData.append('invited', JSON.stringify(dataToCSVFormat))
        
