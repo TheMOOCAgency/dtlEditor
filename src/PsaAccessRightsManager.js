@@ -29,7 +29,7 @@ function TabPanel(props) {
 
 function PsaAccessRightsManager(props) {
     const classes = props.classes;
-    const [value, setValue] = React.useState(0);
+    const [value, setValue] = React.useState(1);
     function handleChange(event, newValue) {
         setValue(newValue);
     }
@@ -48,7 +48,7 @@ function PsaAccessRightsManager(props) {
             </Tabs>
             <TabPanel value={value} index={0}>
                 {props.dtlinfo && props.usersinfo && props.structinfos  ?
-                (<ScopeEditor 
+                (<ScopeEditor
                     cultureDigital={props.usersinfo}
                     dtl={props.dtlinfo}
                     struct_org={props.structinfos}
@@ -75,4 +75,3 @@ function PsaAccessRightsManager(props) {
     );
 }
 export default withStyles(style)(PsaAccessRightsManager)
-

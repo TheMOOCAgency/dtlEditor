@@ -5,6 +5,7 @@ import styles from '../../assets/styleHook.js'
 import { withStyles } from '@material-ui/styles';
 import SnackBar from '../dialog/SnackBar'
 import TextField from '@material-ui/core/TextField';
+import { CSVLink } from "react-csv";
 class AccessProvider extends React.Component {
     constructor(props) {
         super(props);
@@ -12,6 +13,7 @@ class AccessProvider extends React.Component {
             columnsGrid : [],
             rows : [],
             has_access : [],
+            dataToCSV : [],
             openedSnackBarWarning: false,
             openedSnackBarSuccess: false,
             snackBarHandler : {
@@ -29,6 +31,7 @@ class AccessProvider extends React.Component {
         this.onGrantAccess = this.onGrantAccess.bind(this);
         this.onRemoveAccess = this.onRemoveAccess.bind(this);
         this.onResize = this.onResize.bind(this);
+        this.downloadCsv = this.downloadCsv.bind(this);
     }
     onResize(){
         this.setState({
@@ -109,7 +112,7 @@ class AccessProvider extends React.Component {
                     warning.push(Uid)
                 }
                 return null
-            } 
+            }
         })
         stringValue = this.state.has_access.filter((Uid) => {
             return !document.getElementById('listUsersToChange').value.split("\n").includes(Uid)
@@ -120,9 +123,32 @@ class AccessProvider extends React.Component {
         },() => {
                 this.handleSubmit(warning);
         })
-        
+
         }
     }
+    downloadCsv(){
+    var rowsRaw = this.props.cultureDigital.map(function(cultureDigitalRow){
+        return {...cultureDigitalRow,has_access: 'no'}
+    },this)
+
+    var  columnToSend = Object.keys(rowsRaw);
+
+    var dataToDownload = rowsRaw.map(function(cultureDigitalRow){
+      this.state.rows.forEach(function(stateRow){
+        if(cultureDigitalRow.Uid === stateRow.Uid ){
+            if(stateRow.has_access === "yes" ){
+                cultureDigitalRow.has_access = "yes"
+            }
+        }
+      })
+      return cultureDigitalRow
+    },this)
+
+      this.setState({
+        dataToCSV : dataToDownload
+      })
+    }
+
     handleSubmit(warning) {
         const that = this;
         let dataToCSVFormat = this.state.has_access.map((data)=>{
@@ -130,7 +156,7 @@ class AccessProvider extends React.Component {
         })
         let formData = new FormData();
         formData.append('invited', JSON.stringify(dataToCSVFormat))
-       
+
         fetch(window.location.href, {
             method: 'POST',
             headers: {
@@ -182,15 +208,18 @@ class AccessProvider extends React.Component {
                     rowsMax="5"
                     variant='outlined'
                     placeholder='Type here(or double click on) UID(s) of the user(s) you want to grant or remove access to (one UID per line)'
-                    className={this.props.classes.textearea} 
+                    className={this.props.classes.textearea}
                 />
-               
+
                 <div>
                     <Button className={this.props.classes.button} onClick={this.onGrantAccess} color="primary" variant="contained" id='buttonValidate'>
                     Grant Access
                 </Button>
                     <Button className={this.props.classes.button} onClick={this.onRemoveAccess} color="secondary" variant="contained" id='addingRowButton'>
                     Remove access
+                 </Button>
+                    <Button className={this.props.classes.button} style={{backgroundColor : "green", color : "white"}} variant="contained" id='downloadDtat'>
+                    <CSVLink style={{color : "white",textDecoration : "none"}} data ={this.state.dataToCSV} onClick={this.downloadCsv} > Download data</CSVLink>
                  </Button>
                 </div>
                 <ReactDataGrid
@@ -219,7 +248,7 @@ class AccessProvider extends React.Component {
                 />
                 <SnackBar
                     snackBarState={this.state.snackBarHandler}
-                    
+
                     handleClose={() => {
                         this.setState({
                             snackBarHandler: {
