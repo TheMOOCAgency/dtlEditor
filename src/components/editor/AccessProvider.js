@@ -127,11 +127,42 @@ class AccessProvider extends React.Component {
         }
     }
     downloadCsv(){
+
     var rowsRaw = this.props.cultureDigital.map(function(cultureDigitalRow){
         return {...cultureDigitalRow,has_access: 'no'}
     },this)
 
-    var  columnToSend = Object.keys(rowsRaw);
+    var  columnToSend = [
+      "Uid",
+      "last_name",
+      "second_last_name",
+      "first_name",
+      "profession",
+      "society",
+      "manager",
+      "toBeDeleted",
+      "role",
+      "location",
+      "email",
+      "function",
+      "language",
+      "country",
+      "struct_orgA",
+      "struct_orgB",
+      "struct_orgC",
+      "struct_org3",
+      "struct_org2",
+      "struct_org1",
+      "struct_org7",
+      "struct_org6",
+      "struct_org5",
+      "struct_org4",
+      "struct_org9",
+      "struct_org8",
+      "detailedResults",
+      "job_family",
+      "has_access"
+      ];
 
     var dataToDownload = rowsRaw.map(function(cultureDigitalRow){
       this.state.rows.forEach(function(stateRow){
@@ -144,8 +175,17 @@ class AccessProvider extends React.Component {
       return cultureDigitalRow
     },this)
 
+      dataToDownload = dataToDownload.map(function(obj){
+        var tempil = []
+        columnToSend.map(function(el){
+          tempil.push(obj[el])
+        })
+        return tempil
+      },this)
+      dataToDownload.unshift(columnToSend);
+
       this.setState({
-        dataToCSV : dataToDownload
+        dataToCSV : JSON.parse(JSON.stringify(dataToDownload))
       })
     }
 
