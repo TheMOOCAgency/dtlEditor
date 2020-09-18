@@ -2,16 +2,28 @@ import "react-app-polyfill/ie11";
 import "react-app-polyfill/stable";
 import React from "react";
 import ReactDOM from "react-dom";
-import AccessRightsManager from "./AccessRightsManager";
+import ScopeEditor from "./containers/ScopeEditor";
+import { ThemeProvider } from "@material-ui/styles";
+import dtlTheme from "./assets/theme.js";
 
 ReactDOM.render(
-  <div id="wrapper">
-    <AccessRightsManager
-      usersinfo={window.props.usersinfo}
-      dtlinfo={window.props.dtlinfo}
-      structinfos={window.props.structinfos}
-      accessInfo={window.props.invited_user_file.map((el) => el["Uid"])}
-    />
-  </div>,
+  <ThemeProvider theme={dtlTheme}>
+    <div id="wrapper">
+      {window.props.dtlinfo &&
+      window.props.usersinfo &&
+      window.props.structinfos ? (
+        <ScopeEditor
+          usersList={window.props.usersinfo}
+          dtl={window.props.dtlinfo}
+          struct_org={window.props.structinfos}
+        />
+      ) : (
+        <center style={{ fontSize: "18px" }}>
+          Error when retrieving the data, try to reload the page and contact an
+          administrator
+        </center>
+      )}
+    </div>
+  </ThemeProvider>,
   document.getElementById("root")
 );

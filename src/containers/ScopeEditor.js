@@ -3,10 +3,11 @@ import ReactDataGrid from "react-data-grid";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import { Editors } from "react-data-grid-addons";
 import Button from "@material-ui/core/Button";
-import AlertDialog from "../dialog/AlertDialog";
-import SnackBarError from "../dialog/SnackBarError";
+import AlertDialog from "../components/dialog/AlertDialog";
+import SnackBarError from "../components/dialog/SnackBarError";
 import { withStyles } from "@material-ui/styles";
-import styles from "../../assets/styleHook.js";
+import styles from "../assets/styleHook.js";
+import "../components/editor/editor.css";
 
 const { DropDownEditor } = Editors;
 
@@ -130,7 +131,6 @@ class ScopeEditor extends React.Component {
     for (var property in struct_org) {
       struct_org[property].push("");
     }
-    console.log(struct_org);
 
     struct_org1.push("all");
     struct_org1.sort();
@@ -282,6 +282,7 @@ class ScopeEditor extends React.Component {
       openedDialogDelete,
       deletingRow,
       openedWarning,
+      changing,
     } = this.state;
     return (
       <div className="App scopeEditor">
@@ -317,7 +318,7 @@ class ScopeEditor extends React.Component {
               >
                 Add a DTL Scope
               </Button>
-              {this.state.changing && (
+              {changing && (
                 <p
                   className={"changeWarning"}
                   style={{ color: "red", fontStyle: "italic" }}

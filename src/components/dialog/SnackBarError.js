@@ -7,7 +7,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import WarningIcon from "@material-ui/icons/Warning";
 import SnackbarContent from "@material-ui/core/SnackbarContent";
 import clsx from "clsx";
-export default function SnackBarError(props) {
+export default function SnackBarError({ handleClose, open }) {
   const useStyles1 = makeStyles((theme) => ({
     warning: {
       backgroundColor: amber[700],
@@ -27,12 +27,12 @@ export default function SnackBarError(props) {
           vertical: "bottom",
           horizontal: "left",
         }}
-        open={props.open}
+        open={open}
         onClose={(event, reason) => {
           if (reason === "clickaway") {
             return;
           } else {
-            return props.handleClose();
+            return handleClose();
           }
         }}
         autoHideDuration={3000}
@@ -51,9 +51,9 @@ export default function SnackBarError(props) {
               key="close"
               aria-label="close"
               className={"close"}
-              onClick={props.handleClose}
+              onClick={handleClose}
             >
-              <CloseIcon className={classes.icon} />
+              <CloseIcon className={icon} />
             </IconButton>,
           ]}
         />
