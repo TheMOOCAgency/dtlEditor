@@ -15,7 +15,7 @@ class ScopeEditor extends React.Component {
     columns: null,
     openedDialogDelete: false,
     deletingRow: {},
-    openedWarning: false,
+    displayError: false,
     unsavedChanges: false,
     rows: [],
   };
@@ -84,10 +84,10 @@ class ScopeEditor extends React.Component {
       Object.keys(updated)[0] === "Uid" &&
       this.state.rows[toRow].Uid !== updated.Uid
     ) {
-      this.toggleDialogs("openedWarning");
       let count = false;
 
-      for (let i = 1; i < usersList.length; i++) {
+      for (let i = 0; i < usersList.length; i++) {
+        console.log(usersList[i]);
         if (usersList[i].Uid === updated.Uid) {
           count = true;
           let newUser = {
@@ -107,8 +107,7 @@ class ScopeEditor extends React.Component {
         }
       }
       if (!count) {
-        count = false;
-        this.toggleDialogs("openedWarning");
+        this.toggleDialogs("displayError");
       }
     } else {
       this.setState((state) => {
@@ -205,7 +204,6 @@ class ScopeEditor extends React.Component {
     const comparator = (a, b) => {
       return a["last_name"] > b["last_name"] ? 1 : -1;
     };
-
     this.setState({
       rows: [...this.props.dtl].sort(comparator),
     });
@@ -217,7 +215,7 @@ class ScopeEditor extends React.Component {
       columns,
       openedDialogDelete,
       deletingRow,
-      openedWarning,
+      displayError,
       unsavedChanges,
       rows,
     } = this.state;
@@ -287,8 +285,8 @@ class ScopeEditor extends React.Component {
             deletingRow={deletingRow}
           />
           <SnackBarError
-            open={openedWarning}
-            handleClose={() => this.toggleDialogs("openedWarning")}
+            open={displayError}
+            handleClose={() => this.toggleDialogs("displayError")}
           />
         </div>
       </div>
