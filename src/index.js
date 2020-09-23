@@ -15,7 +15,7 @@ ReactDOM.render(
         <ScopeEditor
           usersList={window.props.usersinfo}
           dtl={window.props.dtlinfo}
-          struct_org={window.props.structinfos}
+          structures={window.props.structinfos}
         />
       ) : (
         <center style={{ fontSize: "18px" }}>
