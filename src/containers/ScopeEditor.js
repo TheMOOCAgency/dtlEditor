@@ -29,12 +29,13 @@ class ScopeEditor extends React.Component {
     const { dtl, structures } = this.props;
     // Sort data in the following order
     // Uid;last_name;first_name;email;struct_org1;
+    console.log(Object.keys(dtl[0])[2]);
     let columnsSorted = [
-      Object.keys(dtl[0])[3],
-      Object.keys(dtl[0])[2],
-      Object.keys(dtl[0])[1],
-      Object.keys(dtl[0])[4],
-      Object.keys(dtl[0])[0],
+      Object.keys(dtl[0]).filter(title => title === "Uid")[0],
+      Object.keys(dtl[0]).filter(title => title === "last_name")[0],
+      Object.keys(dtl[0]).filter(title => title === "first_name")[0],
+      Object.keys(dtl[0]).filter(title => title === "email")[0],
+      Object.keys(dtl[0]).filter(title => title === "struct_org1")[0],
     ];
 
     // Cells config
@@ -87,7 +88,6 @@ class ScopeEditor extends React.Component {
       let count = false;
 
       for (let i = 0; i < usersList.length; i++) {
-        console.log(usersList[i]);
         if (usersList[i].Uid === updated.Uid) {
           count = true;
           let newUser = {
@@ -172,12 +172,15 @@ class ScopeEditor extends React.Component {
     return cellActions[column.key];
   };
 
-  handleSubmit = (event) => {
-    event.preventDefault();
+  handleSubmit = () => {
     // prevent from sending empty lines
-    let dataToSend = this.props.dtl.filter((value, index, arr) => {
+    let dataToSend = this.state.rows.filter((value, index, arr) => {
       return value.Uid !== undefined;
     });
+
+    
+
+    console.log(dataToSend);
     // post request for dtl file update
     let formData = new FormData();
     formData.append("dtl", JSON.stringify(dataToSend));
@@ -188,9 +191,7 @@ class ScopeEditor extends React.Component {
       },
       body: formData,
     })
-      .then(function (data) {
-        console.log(data);
-      })
+      .then(function (data) {})
       .catch(function (error) {
         alert("An error has occurred, no data has been sent !");
       });
@@ -233,7 +234,7 @@ class ScopeEditor extends React.Component {
           <div>
             <Button
               className={button}
-              onClick={(event) => this.handleSubmit(event)}
+              onClick={this.handleSubmit}
               color="primary"
               variant="contained"
               id="buttonValidate"
