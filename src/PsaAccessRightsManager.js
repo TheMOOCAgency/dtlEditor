@@ -34,6 +34,51 @@ function PsaAccessRightsManager(props) {
         setValue(newValue);
     }
 
+    function getStructorgs(structinfos) {
+        function arrangeIntoTree(paths) {
+            var tree = [];
+        
+            for (var i = 0; i < paths.length; i++) {
+                const path = paths[i];
+                const pathArray = Object.keys(path)
+                let currentLevel = tree;
+                for (var j = 0; j < pathArray.length; j++) {
+                    if (pathArray[j] === "struct_org1" || pathArray[j] === "struct_org2") {
+                        var part = path[pathArray[j]];
+            
+                        var existingPath = findWhere(currentLevel, 'struct_org1', part);
+            
+                        if (existingPath) {
+                            currentLevel = existingPath.struct_org2;
+                        } else {
+                            var newPart = {
+                                struct_org1: part,
+                                struct_org2: [],
+                            }
+            
+                            currentLevel.push(newPart);
+                            currentLevel = newPart.struct_org2;
+                        }
+                    }
+                }
+            }
+            return tree;
+        
+            function findWhere(array, key, value) {
+                let t = 0; // t is used as a counter
+                while (t < array.length && array[t][key] !== value) { t++; }; // find the index where the id is the as the aValue
+        
+                if (t < array.length) {
+                    return array[t]
+                } else {
+                    return false;
+                }
+            }
+        }
+        var tree = arrangeIntoTree(structinfos);
+        return tree
+    }
+
     return (
         <ThemeProvider theme={dtlTheme}>
             <Tabs
@@ -51,7 +96,7 @@ function PsaAccessRightsManager(props) {
                 (<ScopeEditor
                     cultureDigital={props.usersinfo}
                     dtl={props.dtlinfo}
-                    struct_org={props.structinfos}
+                    struct_org={getStructorgs(props.structinfos)}
                  />):
                  (
                         <center style={{ fontSize:"18px" }}>Error when retrieving the data, try to reload the page and contact an administrator</center>
