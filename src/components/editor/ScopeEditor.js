@@ -38,13 +38,19 @@ class ScopeEditor extends React.Component {
       Object.keys(dtl[0]).filter(title => title === "struct_org2")[0],
     ];
 
+    let struct_org2_list = []
     let struct_org1_list = struct_org.map((org) => {
+      for (let i = 0; i < org.struct_org2.length; i++) {
+        if (!struct_org2_list.includes(org.struct_org2[i])) {
+          struct_org2_list.push(org.struct_org2[i])
+        }
+      }
       return org["struct_org1"]
     });
     struct_org1_list = struct_org1_list.sort()
-    console.log(struct_org1_list)
-
-    let struct_org2_list = []
+    struct_org1_list.push("all")
+    struct_org2_list = struct_org2_list.sort()
+    struct_org2_list.push("all")
 
     // Cells config
     let cellsConfig = columnsSorted.map((title) => {

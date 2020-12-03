@@ -34,49 +34,24 @@ function PsaAccessRightsManager(props) {
         setValue(newValue);
     }
 
-    function getStructorgs(structinfos) {
-        function arrangeIntoTree(paths) {
-            var tree = [];
-        
-            for (var i = 0; i < paths.length; i++) {
-                const path = paths[i];
-                const pathArray = Object.keys(path)
-                let currentLevel = tree;
-                for (var j = 0; j < pathArray.length; j++) {
-                    if (pathArray[j] === "struct_org1" || pathArray[j] === "struct_org2") {
-                        var part = path[pathArray[j]];
-            
-                        var existingPath = findWhere(currentLevel, 'struct_org1', part);
-            
-                        if (existingPath) {
-                            currentLevel = existingPath.struct_org2;
-                        } else {
-                            var newPart = {
-                                struct_org1: part,
-                                struct_org2: [],
-                            }
-            
-                            currentLevel.push(newPart);
-                            currentLevel = newPart.struct_org2;
-                        }
-                    }
-                }
-            }
-            return tree;
-        
-            function findWhere(array, key, value) {
-                let t = 0; // t is used as a counter
-                while (t < array.length && array[t][key] !== value) { t++; }; // find the index where the id is the as the aValue
-        
-                if (t < array.length) {
-                    return array[t]
-                } else {
-                    return false;
+    function getStructorgs(structInfos) {
+        let structOrgs = []
+        let arrayStructOrg1ForIndex = []
+
+        for (let i = 0; i < structInfos.length; i++) {
+            const currentOrg1 = structInfos[i].struct_org1
+            const currentOrg2 = structInfos[i].struct_org2
+            if (!arrayStructOrg1ForIndex.includes(currentOrg1)) {
+                arrayStructOrg1ForIndex.push(currentOrg1)
+                structOrgs.push({"struct_org1":currentOrg1,"struct_org2":[]})
+            } else {              
+                const selectedOrg = structOrgs.find(o => o.struct_org1 === currentOrg1)
+                if (!selectedOrg.struct_org2.includes(currentOrg2)) {
+                    selectedOrg.struct_org2.push(currentOrg2)
                 }
             }
         }
-        var tree = arrangeIntoTree(structinfos);
-        return tree
+        return structOrgs
     }
 
     return (
