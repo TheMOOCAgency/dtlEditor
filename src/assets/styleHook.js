@@ -4,7 +4,6 @@ const styles = {
         fontWeight: '400'
     },
     button: {
-        borderRadius: '15px',
         padding: "10px 20px",
         fontSize: '12px',
         margin : '10px 5px',
@@ -16,9 +15,12 @@ const styles = {
     },
     tab: {
         fontSize: '16px!important',
+        width: 350,
+        fontWeight: 900
     },
     tabs: {
-        fontSize : '18px',
+        fontSize : '16px',
+        
     },
 };
 

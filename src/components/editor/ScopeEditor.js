@@ -1,322 +1,222 @@
-import React from 'react';
-import ReactDataGrid from 'react-data-grid';
-// import CircularProgress from '@material-ui/core/CircularProgress';
-import { Editors } from "react-data-grid-addons";
-import Button from '@material-ui/core/Button';
-import AlertDialog from '../dialog/AlertDialog'
-import SnackBarError from '../dialog/SnackBarError'
-import { withStyles } from '@material-ui/styles';
-import styles from '../../assets/styleHook.js'
+import React, { useState, useCallback } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  Button,
+  Grid,
+  TableRow,
+  Paper,
+  Input,
+  Select,
+  MenuItem,
+  FormControl,
+  withStyles,
+  makeStyles,
+} from "@material-ui/core/";
 
-const { DropDownEditor } = Editors;
+const StyledTableCell = withStyles((theme) => ({
+  head: {
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.common.white,
+    fontSize: 16,
+  },
+  body: {
+    fontSize: 14,
+  },
+}))(TableCell);
 
-class ScopeEditor extends React.Component {
-  state = {
-    columns: null,
-    openedDialogDelete: false,
-    deletingRow: {},
-    displayError: false,
-    unsavedChanges: false,
-    rows: [],
-  };
+const StyledTableRow = withStyles((theme) => ({
+  root: {
+    "&:nth-of-type(odd)": {
+      backgroundColor: theme.palette.action.hover,
+    },
+    cursor: "pointer",
+  },
+}))(TableRow);
 
-  toggleDialogs = (name, row) => {
-    this.setState({ [name]: !this.state[name] });
-    row && this.setState({ deletingRow: row });
-  };
+const useStyles = makeStyles({
+  table: {
+    minWidth: 700,
+    maxWidth: 1200,
+    marginLeft: 25,
+    marginBottom: 25,
+  },
+  buttonsList: {
+    margin: 25,
+  },
+  button: {
+    marginRight: 15,
+  },
+});
 
-  getData = () => {
-    const { dtl, struct_org } = this.props;
-    // Sort data in the following order
-    // Uid;last_name;first_name;email;struct_org1;struct_org2;
-    let columnsSorted = [
-      Object.keys(dtl[0]).filter(title => title === "Uid")[0],
-      Object.keys(dtl[0]).filter(title => title === "last_name")[0],
-      Object.keys(dtl[0]).filter(title => title === "first_name")[0],
-      Object.keys(dtl[0]).filter(title => title === "email")[0],
-      Object.keys(dtl[0]).filter(title => title === "struct_org1")[0],
-      Object.keys(dtl[0]).filter(title => title === "struct_org2")[0],
-    ];
+const Buttons = ({ addDtlScope }) => {
+  const classes = useStyles();
+  return (
+    <Grid className={classes.buttonsList}>
+      <Button
+        className={classes.button}
+        onClick={() => addDtlScope()}
+        variant="contained"
+        color="primary"
+      >
+        Add a DTL scope
+      </Button>
+      <Button className={classes.button} variant="contained" color="secondary">
+        Save
+      </Button>
+    </Grid>
+  );
+};
 
-    let struct_org2_list = []
-    let struct_org1_list = struct_org.map((org) => {
-      for (let i = 0; i < org.struct_org2.length; i++) {
-        if (!struct_org2_list.includes(org.struct_org2[i])) {
-          struct_org2_list.push(org.struct_org2[i])
+const Header = () => {
+  return (
+    <TableHead>
+      <TableRow>
+        <StyledTableCell align="center">Uid</StyledTableCell>
+        <StyledTableCell align="center">first_name</StyledTableCell>
+        <StyledTableCell align="center">last_name</StyledTableCell>
+        <StyledTableCell align="center">struct_org1</StyledTableCell>
+        <StyledTableCell align="center">struct_org2</StyledTableCell>
+      </TableRow>
+    </TableHead>
+  );
+};
+
+const Selector = ({ name, index, editDtlScope, structures, value }) => {
+  return (
+    <FormControl>
+      <Select
+        value={value}
+        name={name}
+        onChange={(event) =>
+          editDtlScope(index, event.target.name, event.target.value)
         }
-      }
-      return org["struct_org1"]
-    });
-    struct_org1_list = struct_org1_list.sort()
-    struct_org1_list.push("all")
-    struct_org2_list = struct_org2_list.sort()
-    struct_org2_list.push("all")
+      >
+        {structures.map((structure) => {
+          return (
+            <MenuItem key={structure} value={structure}>
+              {structure}
+            </MenuItem>
+          );
+        })}
+      </Select>
+    </FormControl>
+  );
+};
 
-    // Cells config
-    let cellsConfig = columnsSorted.map((title) => {
-      if (title === "struct_org1") {
-        return {
-          key: title,
-          name: title,
-          editable: true,
-          sortable: true,
-          resizable: true,
-          width: 110,
-          editor: <DropDownEditor options={struct_org1_list} />,
-        };
-      } else if (title === "struct_org2") {
-        return {
-          key: title,
-          name: title,
-          editable: true,
-          sortable: true,
-          resizable: true,
-          width: 110,
-          editor: <DropDownEditor options={struct_org2_list} />,
-        };
-      } else if (title === "Uid") {
-        return {
-          key: title,
-          name: title,
-          editable: true,
-          sortable: true,
-          resizable: true,
-          width: 150,
-        };
-      } else {
-        return {
-          key: title,
-          name: title,
-          sortable: true,
-          resizable: true,
-          width: 200,
-        };
-      }
-    });
-
-    this.setState({
-      columns: cellsConfig,
-    });
-  };
-
-  onGridRowsUpdated = ({ fromRow, toRow, updated }) => {
-    const { usersList } = this.props;
-    function capitalizeFirstLetter(string) {
-      return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
-    }
-
-    if (
-      Object.keys(updated)[0] === "Uid" &&
-      this.state.rows[toRow].Uid !== updated.Uid
-    ) {
-      let count = false;
-
-      for (let i = 0; i < usersList.length; i++) {
-        if (usersList[i].Uid === updated.Uid) {
-          count = true;
-          let newUser = {
-            Uid: usersList[i].Uid,
-            email: usersList[i].email,
-            first_name: capitalizeFirstLetter(usersList[i].first_name),
-            last_name: capitalizeFirstLetter(usersList[i].last_name),
-            struct_org1: "",
-          };
-          this.setState((state) => {
-            const rows = state.rows.slice();
-            for (let i = fromRow; i <= toRow; i++) {
-              rows[i] = { ...rows[i], ...newUser };
+const Row = ({
+  user,
+  index,
+  structures,
+  selectedCell,
+  setSelectedCell,
+  editDtlScope,
+}) => {
+  return (
+    <StyledTableRow onClick={() => setSelectedCell(index)}>
+      <StyledTableCell component="th" scope="row" align="center">
+        {selectedCell === index ? (
+          <Input
+            value={user.Uid}
+            name="Uid"
+            onChange={(event) =>
+              editDtlScope(index, event.target.name, event.target.value)
             }
-            return { rows };
-          });
-        }
-      }
-      if (!count) {
-        this.toggleDialogs("displayError");
-      }
-    } else {
-      this.setState((state) => {
-        const rows = state.rows.slice();
-        for (let i = fromRow; i <= toRow; i++) {
-          rows[i] = { ...rows[i], ...updated };
-        }
-        return { rows };
-      });
-    }
-    this.setState({
-      unsavedChanges: true,
-    });
-  };
-
-  addRow = () => {
-    // add a new row on top of the list, and scroll to it
-    let canvGrid = document.getElementsByClassName("react-grid-Canvas")[0];
-    canvGrid.scrollTop = 0;
-    let newRows = [...this.props.dtl];
-    newRows.unshift({});
-    this.setState((prevState) => ({
-      rows: newRows,
-    }));
-  };
-
-  sortRows = (initialRows, sortColumn, sortDirection) => {
-    const comparator = (a, b) => {
-      if (sortDirection === "ASC") {
-        return a[sortColumn] > b[sortColumn] ? 1 : -1;
-      } else if (sortDirection === "DESC") {
-        return a[sortColumn] < b[sortColumn] ? 1 : -1;
-      }
-    };
-    return sortDirection === "NONE"
-      ? initialRows
-      : [...initialRows].sort(comparator);
-  };
-
-  deleteRow = (row) => {
-    this.setState((prevState) => ({
-      rows: [
-        ...prevState.rows.slice(0, this.props.dtl.indexOf(row)),
-        ...prevState.rows.slice(this.props.dtl.indexOf(row) + 1),
-      ],
-      unsavedChanges: true,
-    }));
-  };
-
-  getCellActions = (column, row) => {
-    const firstNameActions = [
-      {
-        icon: <span className="glyphicon glyphicon-remove" />,
-        callback: () => {
-          this.toggleDialogs("openedDialogDelete", row);
-        },
-      },
-    ];
-    const cellActions = {
-      Uid: firstNameActions,
-    };
-    return cellActions[column.key];
-  };
-
-  handleSubmit = () => {
-    // prevent from sending empty lines
-    let dataToSend = this.state.rows.filter((value, index, arr) => {
-      return value.Uid !== undefined;
-    });
-
-    
-
-    console.log(dataToSend);
-    // post request for dtl file update
-    let formData = new FormData();
-    formData.append("dtl", JSON.stringify(dataToSend));
-    fetch(window.location.href, {
-      method: "POST",
-      headers: {
-        "X-CSRFToken": window.props.csrfToken,
-      },
-      body: formData,
-    })
-      .then(function (data) {})
-      .catch(function (error) {
-        alert("An error has occurred, no data has been sent !");
-      });
-  };
-
-  componentWillMount() {
-    this.getData(this.props.dtl);
-  }
-
-  componentDidMount() {
-    const comparator = (a, b) => {
-      return a["last_name"] > b["last_name"] ? 1 : -1;
-    };
-    this.setState({
-      rows: [...this.props.dtl].sort(comparator),
-    });
-  }
-
-  render() {
-    const { title, button } = this.props.classes;
-    const {
-      columns,
-      openedDialogDelete,
-      deletingRow,
-      displayError,
-      unsavedChanges,
-      rows,
-    } = this.state;
-
-    return (
-      <div className="App scopeEditor">
-        <div>
-          <h1 className={title}>DTL Scope Editor</h1>
-          <i style={{ color: "#777" }}>
-            Changes made on this interface are displayed in real time but DTL
-            scopes are updated each night, between midnight and 6am (French
-            Time). DTLs may then wait a maximum of 24 hours before seeing any
-            change made here.
-          </i>
-
-          <div>
-            <Button
-              className={button}
-              onClick={this.handleSubmit}
-              color="primary"
-              variant="contained"
-              id="buttonValidate"
-            >
-              Submit
-            </Button>
-            <Button
-              className={button}
-              onClick={this.addRow}
-              color="primary"
-              variant="contained"
-              id="addingRowButton"
-            >
-              Add a DTL Scope
-            </Button>
-            {unsavedChanges && (
-              <p
-                className={"changeWarning"}
-                style={{ color: "red", fontStyle: "italic" }}
-              >
-                You may have unsaved changes
-              </p>
-            )}
-          </div>
-          <ReactDataGrid
-            ref={(datagrid) => {
-              this.refGrid = datagrid;
-            }}
-            columns={columns}
-            rowGetter={(i) => rows[i]}
-            rowsCount={rows.length}
-            onGridRowsUpdated={this.onGridRowsUpdated}
-            enableCellSelect={true}
-            headerRowHeight={35}
-            getCellActions={this.getCellActions}
-            enableRowSelect={null}
-            rowScrollTimeout={null}
-            onGridSort={(sortColumn, sortDirection) => {
-              this.setState({
-                rows: this.sortRows(rows, sortColumn, sortDirection),
-              });
-            }}
           />
-          <AlertDialog
-            open={openedDialogDelete}
-            handleClose={() => this.toggleDialogs("openedDialogDelete")}
-            handleClickOpen={() => this.toggleDialogs("openedDialogDelete")}
-            handleDeleteRow={this.deleteRow}
-            deletingRow={deletingRow}
+        ) : (
+          user.Uid
+        )}
+      </StyledTableCell>
+      <StyledTableCell align="center">{user.first_name}</StyledTableCell>
+      <StyledTableCell align="center">{user.last_name}</StyledTableCell>
+      <StyledTableCell align="center">
+        {selectedCell === index ? (
+          <Selector
+            name="struct_org1"
+            index={index}
+            editDtlScope={editDtlScope}
+            structures={Object.keys(structures)}
+            value={user.struct_org1}
           />
-          <SnackBarError
-            open={displayError}
-            handleClose={() => this.toggleDialogs("displayError")}
+        ) : (
+          user.struct_org1
+        )}
+      </StyledTableCell>
+      <StyledTableCell align="center">
+        {selectedCell === index ? (
+          <Selector
+            name="struct_org2"
+            index={index}
+            editDtlScope={editDtlScope}
+            structures={structures[user.struct_org1]}
+            value={user.struct_org2}
           />
-        </div>
-      </div>
-    );
-  }
+        ) : (
+          user.struct_org2
+        )}
+      </StyledTableCell>
+    </StyledTableRow>
+  );
+};
+
+export default function ScopeEditor({ dtlUsers, structures }) {
+  const classes = useStyles();
+
+  const [dtlScopesList, setDtlScopes] = useState(dtlUsers);
+  const [selectedCell, setSelectedCell] = useState();
+
+  // Create an empty line on top of dtl list
+  const addDtlScope = useCallback(() => {
+    let userTemplate = {
+      Uid: "",
+      first_name: "",
+      last_name: "",
+      struct_org1: "",
+      struct_org2: "",
+    };
+
+    let newDtlList = [...dtlScopesList];
+    newDtlList.unshift(userTemplate);
+    setDtlScopes(newDtlList);
+  }, [dtlScopesList]);
+
+  const editDtlScope = useCallback(
+    (index, name, value) => {
+      console.log(dtlScopesList);
+      let newDtlList = [...dtlScopesList];
+      newDtlList[index][name] = value;
+      if (name === "struct_org1") {
+        newDtlList[index]["struct_org2"] = "";
+      }
+      setDtlScopes(newDtlList);
+    },
+    [dtlScopesList]
+  );
+
+  return (
+    <Grid>
+      <Buttons addDtlScope={addDtlScope} />
+      <TableContainer component={Paper}>
+        <Table className={classes.table}>
+          <Header />
+          <TableBody>
+            {dtlScopesList.map((user, index) => (
+              <Row
+                user={user}
+                index={index}
+                structures={structures}
+                editDtlScope={editDtlScope}
+                selectedCell={selectedCell}
+                setSelectedCell={setSelectedCell}
+                key={index}
+              />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Grid>
+  );
 }
-export default withStyles(styles)(ScopeEditor);
