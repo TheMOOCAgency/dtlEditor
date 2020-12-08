@@ -46,7 +46,7 @@ const StyledTableRow = withStyles((theme) => ({
 const useStyles = makeStyles({
   table: {
     minWidth: 700,
-    maxWidth: 768,
+    maxWidth: 964,
     marginBottom: 25,
   },
   buttonsList: {
@@ -65,7 +65,7 @@ const useStyles = makeStyles({
   subtitle: {
     fontStyle: "italic",
     color: "#777",
-    maxWidth: 768,
+    maxWidth: 964,
     textAlign: "justify",
   },
   container: {
@@ -276,6 +276,7 @@ export default function ScopeEditor({ dtlUsers, structures, usersList }) {
       first_name: "",
       last_name: "",
       email: "",
+      role: "",
       struct_org1: "",
       struct_org2: "",
     };
@@ -315,13 +316,16 @@ export default function ScopeEditor({ dtlUsers, structures, usersList }) {
         });
 
         if (newUser) {
+          console.log(newUser);
           newDtlList[index]["first_name"] = newUser.first_name;
           newDtlList[index]["last_name"] = newUser.last_name;
           newDtlList[index]["email"] = newUser.email;
+          newDtlList[index]["role"] = newUser.role;
         } else {
           newDtlList[index]["first_name"] = "";
           newDtlList[index]["last_name"] = "";
           newDtlList[index]["email"] = "";
+          newDtlList[index]["role"] = "";
           newDtlList[index]["struct_org1"] = "";
           newDtlList[index]["struct_org2"] = "";
           setWarning(true);
