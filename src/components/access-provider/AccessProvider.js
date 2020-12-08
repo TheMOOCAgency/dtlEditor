@@ -3,7 +3,7 @@ import ReactDataGrid from "react-data-grid";
 import Button from "@material-ui/core/Button";
 import styles from "../../assets/styleHook.js";
 import { withStyles } from "@material-ui/styles";
-import SnackBar from "../dialog/SnackBar";
+import SnackBar from "./dialog/SnackBar";
 import TextField from "@material-ui/core/TextField";
 import { CSVLink } from "react-csv";
 class AccessProvider extends React.Component {
@@ -292,8 +292,7 @@ class AccessProvider extends React.Component {
             onClick={this.onGrantAccess}
             color="primary"
             variant="contained"
-            id="buttonValidate"
-          >
+            id="buttonValidate">
             Grant Access
           </Button>
           <Button
@@ -301,21 +300,18 @@ class AccessProvider extends React.Component {
             onClick={this.onRemoveAccess}
             color="secondary"
             variant="contained"
-            id="addingRowButton"
-          >
+            id="addingRowButton">
             Remove access
           </Button>
           <Button
             className={this.props.classes.button}
             style={{ backgroundColor: "green", color: "white" }}
             variant="contained"
-            id="downloadDtat"
-          >
+            id="downloadDtat">
             <CSVLink
               style={{ color: "white", textDecoration: "none" }}
               data={this.state.dataToCSV}
-              onClick={this.downloadCsv}
-            >
+              onClick={this.downloadCsv}>
               {" "}
               Download data
             </CSVLink>

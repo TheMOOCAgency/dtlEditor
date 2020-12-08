@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import ScopeEditor from "./components/scopes-editor/ScopeEditor";
@@ -26,29 +26,45 @@ function TabPanel(props) {
   );
 }
 
-function PsaAccessRightsManager(props) {
-  const classes = props.classes;
-  const [value, setValue] = React.useState(0);
+const PsaAccessRightsManager = ({
+  structinfos,
+  dtlinfo,
+  usersinfo,
+  accessInfo,
+  classes,
+}) => {
+  const [value, setValue] = useState(0);
+  const [structures, setStructures] = useState({});
   function handleChange(event, newValue) {
     setValue(newValue);
   }
 
-  function getStructorgs(structInfos) {
+  const getOrgsTree = (structInfos) => {
     let structuresTree = {};
     structInfos.forEach((info) => {
       let { struct_org1, struct_org2 } = info;
 
-      if (!structuresTree.hasOwnProperty(struct_org1)) {
-        structuresTree[struct_org1] = [struct_org2];
+      if (struct_org1 && !structuresTree.hasOwnProperty(struct_org1)) {
+        if (struct_org2) {
+          structuresTree[struct_org1] = ["all", struct_org2];
+        } else {
+          // PREVENT FROM ORG1 THAT DOESNT HAVE ANY CHILD
+          structuresTree[struct_org1] = ["all"];
+        }
       } else {
-        if (!structuresTree[struct_org1].includes(struct_org2)) {
+        if (struct_org2 && !structuresTree[struct_org1].includes(struct_org2)) {
           structuresTree[struct_org1].push(struct_org2);
         }
       }
     });
 
-    return structuresTree;
-  }
+    structuresTree.all = ["all"];
+    setStructures(structuresTree);
+  };
+
+  useEffect(() => {
+    getOrgsTree(structinfos);
+  }, [structinfos]);
 
   return (
     <ThemeProvider theme={dtlTheme}>
@@ -61,11 +77,11 @@ function PsaAccessRightsManager(props) {
         <Tab className={classes.tab} label="Access Provider" />
       </Tabs>
       <TabPanel value={value} index={0}>
-        {props.dtlinfo && props.usersinfo && props.structinfos ? (
+        {dtlinfo && usersinfo && structinfos ? (
           <ScopeEditor
-            usersList={props.usersinfo}
-            dtlUsers={props.dtlinfo}
-            structures={getStructorgs(props.structinfos)}
+            usersList={usersinfo}
+            dtlUsers={dtlinfo}
+            structures={structures}
           />
         ) : (
           <center style={{ fontSize: "18px" }}>
@@ -75,9 +91,9 @@ function PsaAccessRightsManager(props) {
         )}
       </TabPanel>
       <TabPanel value={value} index={1}>
-        {props.accessInfo && props.usersinfo ? (
+        {accessInfo && usersinfo ? (
           <AccessProvider
-            cultureDigital={props.usersinfo}
+            cultureDigital={usersinfo}
             columnNeeded={[
               "Uid",
               "last_name",
@@ -85,7 +101,7 @@ function PsaAccessRightsManager(props) {
               "email",
               "has_access",
             ]}
-            accessUsers={props.accessInfo}
+            accessUsers={accessInfo}
           />
         ) : (
           <center style={{ fontSize: "18px" }}>
@@ -96,5 +112,5 @@ function PsaAccessRightsManager(props) {
       </TabPanel>
     </ThemeProvider>
   );
-}
+};
 export default withStyles(style)(PsaAccessRightsManager);

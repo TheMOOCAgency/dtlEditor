@@ -31,6 +31,7 @@ const StyledTableCell = withStyles((theme) => ({
   body: {
     fontSize: 12,
     position: "relative",
+    height: 50,
   },
 }))(TableCell);
 
@@ -43,12 +44,7 @@ const StyledTableRow = withStyles((theme) => ({
   },
 }))(TableRow);
 
-const useStyles = makeStyles({
-  table: {
-    minWidth: 700,
-    maxWidth: 964,
-    marginBottom: 25,
-  },
+const useStyles = makeStyles((theme) => ({
   buttonsList: {
     margin: "25px 25px 25px 0",
   },
@@ -68,7 +64,7 @@ const useStyles = makeStyles({
     maxWidth: 964,
     textAlign: "justify",
   },
-  container: {
+  dtlEditor: {
     marginLeft: 25,
   },
   select: {
@@ -77,7 +73,15 @@ const useStyles = makeStyles({
   alert: {
     fontSize: 14,
   },
-});
+  container: {
+    minWidth: 700,
+    maxWidth: 964,
+    height: 550,
+    marginBottom: 25,
+    border: `3px solid ${theme.palette.primary.main}`,
+    borderRadius: 5,
+  },
+}));
 
 const Alert = (props) => {
   const classes = useStyles();
@@ -193,12 +197,13 @@ const Row = ({
       <StyledTableCell align="left">{user.last_name}</StyledTableCell>
       <StyledTableCell align="left">{user.email}</StyledTableCell>
       <StyledTableCell align="center">
-        {selectedCell === index ? (
+        {selectedCell === index &&
+        Object.keys(structures).includes(user.struct_org1) ? (
           <Selector
             name="struct_org1"
             index={index}
             editDtlScope={editDtlScope}
-            structures={[...Object.keys(structures), "all"]}
+            structures={Object.keys(structures)}
             value={user.struct_org1}
           />
         ) : (
@@ -206,12 +211,13 @@ const Row = ({
         )}
       </StyledTableCell>
       <StyledTableCell align="center">
-        {selectedCell === index ? (
+        {selectedCell === index &&
+        Object.keys(structures).includes(user.struct_org1) ? (
           <Selector
             name="struct_org2"
             index={index}
             editDtlScope={editDtlScope}
-            structures={[...structures[user.struct_org1], "all"]}
+            structures={structures[user.struct_org1]}
             value={user.struct_org2}
           />
         ) : (
@@ -269,8 +275,8 @@ export default function ScopeEditor({ dtlUsers, structures, usersList }) {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
 
-  // Create an empty line on top of dtl list
   const addDtlScope = useCallback(() => {
+    // Create an empty line on top of dtl list
     let userTemplate = {
       Uid: "",
       first_name: "",
@@ -307,21 +313,24 @@ export default function ScopeEditor({ dtlUsers, structures, usersList }) {
       newDtlList[index][name] = value;
 
       if (name === "struct_org1") {
+        // Empty struct_org2 value when selection a new struct_org1
         newDtlList[index]["struct_org2"] = "";
       }
 
       if (name === "Uid") {
+        // Check if Uid is in users list
         let newUser = usersList.find((user) => {
           return user.Uid === value;
         });
 
         if (newUser) {
-          console.log(newUser);
+          // Auto-fill line with user details, when Uid matches
           newDtlList[index]["first_name"] = newUser.first_name;
           newDtlList[index]["last_name"] = newUser.last_name;
           newDtlList[index]["email"] = newUser.email;
           newDtlList[index]["role"] = newUser.role;
         } else {
+          // Empty line in case Uid is not in users list
           newDtlList[index]["first_name"] = "";
           newDtlList[index]["last_name"] = "";
           newDtlList[index]["email"] = "";
@@ -338,9 +347,7 @@ export default function ScopeEditor({ dtlUsers, structures, usersList }) {
   );
 
   const saveNewScopes = () => {
-    let cleanScopes = dtlScopesList.filter((user) => {
-      return user.email !== undefined || user.email !== "";
-    });
+    let cleanScopes = dtlScopesList.filter((user) => user.email !== "");
 
     let formData = new FormData();
     formData.append("dtl", JSON.stringify(cleanScopes));
@@ -351,19 +358,19 @@ export default function ScopeEditor({ dtlUsers, structures, usersList }) {
       },
       body: formData,
     })
-      .then(function (data) {
+      .then((data) => {
         let status = data.status;
         if (status === 200) {
           setSuccess(true);
         }
       })
-      .catch(function (error) {
+      .catch(() => {
         setError(true);
       });
   };
 
   return (
-    <Grid className={classes.container}>
+    <Grid className={classes.dtlEditor}>
       <Box component="h3">DTL Scope Editor</Box>
       <Box component="div" className={classes.subtitle}>
         Changes made on this interface are displayed in real time but DTL scopes
@@ -371,9 +378,9 @@ export default function ScopeEditor({ dtlUsers, structures, usersList }) {
         then wait a maximum of 24 hours before seeing any change made here.
       </Box>
       <Buttons addDtlScope={addDtlScope} saveNewScopes={saveNewScopes} />
-      <TableContainer>
-        <Table className={classes.table}>
-          <Header />
+      <TableContainer className={classes.container} r>
+        <Table stickyHeader>
+          <Header className={classes.tableHeader} />
           <TableBody>
             {dtlScopesList.map((user, index) => (
               <Row
