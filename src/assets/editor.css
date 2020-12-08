@@ -1,0 +1,64 @@
+* {
+  margin: 0px;
+  padding: 0px;
+}
+
+body {
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  padding: 0px 10px;
+}
+
+.circularProgress {
+  position: absolute;
+  top: 45%;
+  left: 45%;
+}
+
+.MuiTypography-body1 {
+  font-size: 1.5rem !important;
+}
+
+.MuiSnackbarContent-root {
+  min-width: 500px !important;
+}
+
+.react-grid-HeaderCell:nth-child(2) {
+  color: grey !important;
+}
+
+.react-grid-HeaderCell:nth-child(3) {
+  color: grey !important;
+}
+
+.react-grid-HeaderCell:nth-child(4) {
+  color: grey !important;
+}
+
+.react-grid-Cell:nth-child(2) {
+  color: gray !important;
+  text-transform: lowercase;
+  text-transform: capitalize !important;
+}
+
+.react-grid-Cell:nth-child(3) {
+  color: gray !important;
+  text-transform: capitalize !important;
+}
+
+.react-grid-Cell:nth-child(4) {
+  color: gray !important;
+}
+
+h2.MuiTypography-h6 {
+  font-size: 16px;
+}
+
+span.MuiButton-label {
+  font-size: 12px;
+}
+
+#listUsersToChange {
+  overflow-y: scroll !important;
+  font-size: 14px;
+  min-height: 80px;
+}

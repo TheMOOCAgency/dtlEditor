@@ -1,15 +1,15 @@
 import React from "react";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import ScopeEditor from "./components/editor/ScopeEditor";
-import AccessProvider from "./components/editor/AccessProvider";
+import ScopeEditor from "./components/scopes-editor/ScopeEditor";
+import AccessProvider from "./components/access-provider/AccessProvider";
 import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 import { ThemeProvider } from "@material-ui/styles";
 import style from "./assets/styleHook.js";
 import dtlTheme from "./assets/theme.js";
 import { withStyles } from "@material-ui/styles";
-import "./components/editor/editor.css";
+import "./assets/editor.css";
 
 function TabPanel(props) {
   const { children, value, index } = props;
@@ -20,8 +20,7 @@ function TabPanel(props) {
       role="tabpanel"
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-    >
+      aria-labelledby={`simple-tab-${index}`}>
       <Box>{children}</Box>
     </Typography>
   );
@@ -33,29 +32,6 @@ function PsaAccessRightsManager(props) {
   function handleChange(event, newValue) {
     setValue(newValue);
   }
-
-  // function getStructorgs(structInfos) {
-  //     let structuresTree = {}
-  //     let structOrgs = []
-  //     let arrayStructOrg1ForIndex = []
-
-  //     for (let i = 0; i < structInfos.length; i++) {
-  //         if(structuresTree.hasOwnPropertuy)
-  //         const currentOrg1 = structInfos[i].struct_org1
-  //         const currentOrg2 = structInfos[i].struct_org2
-  //         if (!arrayStructOrg1ForIndex.includes(currentOrg1)) {
-  //             arrayStructOrg1ForIndex.push(currentOrg1)
-  //             structOrgs.push({ "struct_org1": currentOrg1, "struct_org2": [] })
-  //         } else {
-  //             const selectedOrg = structOrgs.find(o => o.struct_org1 === currentOrg1)
-  //             if (!selectedOrg.struct_org2.includes(currentOrg2)) {
-  //                 selectedOrg.struct_org2.push(currentOrg2)
-  //             }
-  //         }
-  //     }
-  //     console.log(structOrgs)
-  //     return structOrgs
-  // }
 
   function getStructorgs(structInfos) {
     let structuresTree = {};
@@ -80,19 +56,14 @@ function PsaAccessRightsManager(props) {
         indicatorColor="primary"
         textColor="primary"
         value={value}
-        onChange={handleChange}
-        aria-label="Psa access rigthts manager"
-      >
+        onChange={handleChange}>
         <Tab className={classes.tab} label="Dtl Scope editor" />
         <Tab className={classes.tab} label="Access Provider" />
       </Tabs>
       <TabPanel value={value} index={0}>
         {props.dtlinfo && props.usersinfo && props.structinfos ? (
           <ScopeEditor
-            cultureDigital={props.usersinfo}
-            dtl={props.dtlinfo}
-            // struct_org={getStructorgs(props.structinfos)}
-            // new
+            usersList={props.usersinfo}
             dtlUsers={props.dtlinfo}
             structures={getStructorgs(props.structinfos)}
           />

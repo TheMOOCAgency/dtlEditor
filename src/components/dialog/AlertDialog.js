@@ -13,14 +13,12 @@ export default function AlertDialog({
   return (
     <div>
       <Dialog
-        className={"deleteDialog"}
         fullWidth={true}
         style={{ fontSize: "18px" }}
         open={open}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
+        aria-describedby="alert-dialog-description">
         <DialogTitle id="alert-dialog-title">
           {"Are you sure you want to delete this item?"}
         </DialogTitle>
@@ -34,8 +32,7 @@ export default function AlertDialog({
               handleDeleteRow(deletingRow);
             }}
             color="primary"
-            autoFocus
-          >
+            autoFocus>
             Delete
           </Button>
         </DialogActions>
