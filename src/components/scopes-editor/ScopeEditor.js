@@ -197,8 +197,7 @@ const Row = ({
       <StyledTableCell align="left">{user.last_name}</StyledTableCell>
       <StyledTableCell align="left">{user.email}</StyledTableCell>
       <StyledTableCell align="center">
-        {selectedCell === index &&
-        Object.keys(structures).includes(user.struct_org1) ? (
+        {selectedCell === index ? (
           <Selector
             name="struct_org1"
             index={index}
