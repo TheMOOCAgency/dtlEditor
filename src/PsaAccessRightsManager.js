@@ -46,10 +46,10 @@ const PsaAccessRightsManager = ({
 
       if (struct_org1 && !structuresTree.hasOwnProperty(struct_org1)) {
         if (struct_org2) {
-          structuresTree[struct_org1] = ["all", struct_org2];
+          structuresTree[struct_org1] = ["", "all", struct_org2];
         } else {
           // PREVENT FROM ORG1 THAT DOESNT HAVE ANY CHILD
-          structuresTree[struct_org1] = ["all"];
+          structuresTree[struct_org1] = ["", "all"];
         }
       } else {
         if (struct_org2 && !structuresTree[struct_org1].includes(struct_org2)) {
